@@ -55,8 +55,7 @@ The Risk Engine calculates a deterministic 0–100 score based on three weighted
 
 1. **Plantar Pressure Deviation (40% Weight):** Peak and average pressure deviation across 12 bilateral zones relative to patient baseline (kPa).
 2. **Thermal Asymmetry (30% Weight):** Differential temperature between left and right foot (`abs(temp_left - temp_right)` in °C).
-3. **IMU Gait Deviation (30% Weight):** Stance phase gait asymmetry derived from IMU accelerometer/gyroscope readings.
-
+   
 ### Risk Thresholds
 - 🟢 **LOW RISK (< 30):** Baseline metrics healthy. Continue normal daily routine.
 - 🟡 **MODERATE RISK (30–60):** Mild pressure/temp elevation. Re-examine foot skin; schedule 3-day follow-up.
