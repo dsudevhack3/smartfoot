@@ -17,6 +17,14 @@ class User(UserMixin, db.Model):
     patient_profile = db.relationship('Patient', backref='user', uselist=False, cascade="all, delete-orphan")
     doctor_profile = db.relationship('Doctor', backref='user', uselist=False, cascade="all, delete-orphan")
 
+    def __init__(self, email=None, name=None, role=None, profile_photo_url=None, created_at=None, **kwargs):
+        super().__init__(**kwargs)
+        if email is not None: self.email = email
+        if name is not None: self.name = name
+        if role is not None: self.role = role
+        if profile_photo_url is not None: self.profile_photo_url = profile_photo_url
+        if created_at is not None: self.created_at = created_at
+
     def __repr__(self):
         return f'<User {self.email} ({self.role})>'
 
@@ -31,6 +39,12 @@ class Doctor(db.Model):
 
     # Relationships
     patients = db.relationship('Patient', backref='assigned_doctor', lazy=True)
+
+    def __init__(self, user_id=None, credentials='MD, Podiatrist', specialty='Diabetic Foot Specialist', **kwargs):
+        super().__init__(**kwargs)
+        if user_id is not None: self.user_id = user_id
+        if credentials is not None: self.credentials = credentials
+        if specialty is not None: self.specialty = specialty
 
     def __repr__(self):
         return f'<Doctor Dr. {self.user.name if self.user else self.id}>'
@@ -55,6 +69,17 @@ class Patient(db.Model):
     device = db.relationship('Device', backref='patient', uselist=False, cascade="all, delete-orphan")
     telemetries = db.relationship('Telemetry', backref='patient', lazy=True, cascade="all, delete-orphan")
     alerts = db.relationship('Alert', backref='patient', lazy=True, cascade="all, delete-orphan")
+
+    def __init__(self, user_id=None, patient_code=None, age=None, gender=None, assigned_doctor_id=None, baseline_pressure=None, baseline_temp=32.5, baseline_gait=95.0, **kwargs):
+        super().__init__(**kwargs)
+        if user_id is not None: self.user_id = user_id
+        if patient_code is not None: self.patient_code = patient_code
+        if age is not None: self.age = age
+        if gender is not None: self.gender = gender
+        if assigned_doctor_id is not None: self.assigned_doctor_id = assigned_doctor_id
+        if baseline_pressure is not None: self.baseline_pressure = baseline_pressure
+        if baseline_temp is not None: self.baseline_temp = baseline_temp
+        if baseline_gait is not None: self.baseline_gait = baseline_gait
 
     @property
     def baseline_pressure(self):
@@ -87,6 +112,14 @@ class Device(db.Model):
     status = db.Column(db.String(20), default='ONLINE')  # 'ONLINE' or 'OFFLINE'
     last_seen_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
+    def __init__(self, device_id=None, device_token=None, patient_id=None, status='ONLINE', last_seen_at=None, **kwargs):
+        super().__init__(**kwargs)
+        if device_id is not None: self.device_id = device_id
+        if device_token is not None: self.device_token = device_token
+        if patient_id is not None: self.patient_id = patient_id
+        if status is not None: self.status = status
+        if last_seen_at is not None: self.last_seen_at = last_seen_at
+
     def __repr__(self):
         return f'<Device {self.device_id} -> Patient {self.patient_id}>'
 
@@ -110,6 +143,17 @@ class Telemetry(db.Model):
     
     risk_score = db.Column(db.Float, nullable=False, default=0.0)
     is_simulated = db.Column(db.Boolean, default=True)
+
+    def __init__(self, patient_id=None, timestamp=None, pressure_zones=None, temperature_left=32.0, temperature_right=32.0, gait_data=None, risk_score=0.0, is_simulated=True, **kwargs):
+        super().__init__(**kwargs)
+        if patient_id is not None: self.patient_id = patient_id
+        if timestamp is not None: self.timestamp = timestamp
+        if pressure_zones is not None: self.pressure_zones = pressure_zones
+        if temperature_left is not None: self.temperature_left = temperature_left
+        if temperature_right is not None: self.temperature_right = temperature_right
+        if gait_data is not None: self.gait_data = gait_data
+        if risk_score is not None: self.risk_score = risk_score
+        if is_simulated is not None: self.is_simulated = is_simulated
 
     @property
     def pressure_zones(self):
@@ -146,6 +190,20 @@ class Alert(db.Model):
     status = db.Column(db.String(20), default='ACTIVE', index=True)  # 'ACTIVE', 'ACKNOWLEDGED', 'RESOLVED'
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     acknowledged_by = db.Column(db.Integer, db.ForeignKey('doctors.id'), nullable=True)
+
+    def __init__(self, patient_id=None, type=None, title=None, description=None, severity=None, region=None, baseline_value=None, deviation_value=None, status='ACTIVE', created_at=None, acknowledged_by=None, **kwargs):
+        super().__init__(**kwargs)
+        if patient_id is not None: self.patient_id = patient_id
+        if type is not None: self.type = type
+        if title is not None: self.title = title
+        if description is not None: self.description = description
+        if severity is not None: self.severity = severity
+        if region is not None: self.region = region
+        if baseline_value is not None: self.baseline_value = baseline_value
+        if deviation_value is not None: self.deviation_value = deviation_value
+        if status is not None: self.status = status
+        if created_at is not None: self.created_at = created_at
+        if acknowledged_by is not None: self.acknowledged_by = acknowledged_by
 
     def __repr__(self):
         return f'<Alert {self.type} ({self.severity}) for Patient {self.patient_id}>'
