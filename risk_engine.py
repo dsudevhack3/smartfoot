@@ -41,20 +41,33 @@ class RiskEngine:
             p_status = "High Pressure Spike"
             p_explain = f"Critical pressure focal point (+{round(max_dev, 1)} kPa) detected on {peak_zone}."
 
-        # 2. Temperature Asymmetry (30% Weight)
-        temp_diff = abs(float(temp_left) - float(temp_right))
-        # 3.0°C difference = 100% score for temperature component
-        temp_score = min(100.0, (temp_diff / 3.0) * 100.0)
-        
-        if temp_diff < 0.8:
-            t_status = "Symmetric Thermal Map"
-            t_explain = f"Left vs Right temperature difference is minimal ({round(temp_diff, 1)}°C)."
-        elif temp_diff <= 2.0:
-            t_status = "Mild Thermal Asymmetry"
-            t_explain = f"Mild focal temperature difference detected ({round(temp_diff, 1)}°C between feet)."
+        # 2. Temperature Evaluation (30% Weight)
+        if patient and getattr(patient, 'amputated_foot', None) == 'LEFT':
+            # Unilateral Right Foot Temperature comparison against baseline
+            base_t = float(getattr(patient, 'baseline_temp', 32.2) or 32.2)
+            temp_diff = abs(float(temp_right) - base_t)
+            temp_score = min(100.0, (temp_diff / 2.5) * 100.0)
+            if temp_diff < 0.8:
+                t_status = "Normal Unilateral Temperature"
+                t_explain = f"Right foot temperature ({round(temp_right, 1)}°C) is close to baseline ({base_t}°C)."
+            elif temp_diff <= 2.0:
+                t_status = "Elevated Foot Temperature"
+                t_explain = f"Moderate right foot temperature elevation ({round(temp_right, 1)}°C vs baseline {base_t}°C)."
+            else:
+                t_status = "Severe Foot Hotspot"
+                t_explain = f"Significant right foot hotspot detected ({round(temp_right, 1)}°C vs baseline {base_t}°C), indicating inflammation risk."
         else:
-            t_status = "Severe Thermal Asymmetry"
-            t_explain = f"Significant hotspot detected ({round(temp_diff, 1)}°C difference), indicating localized inflammation risk."
+            temp_diff = abs(float(temp_left) - float(temp_right))
+            temp_score = min(100.0, (temp_diff / 3.0) * 100.0)
+            if temp_diff < 0.8:
+                t_status = "Symmetric Thermal Map"
+                t_explain = f"Left vs Right temperature difference is minimal ({round(temp_diff, 1)}°C)."
+            elif temp_diff <= 2.0:
+                t_status = "Mild Thermal Asymmetry"
+                t_explain = f"Mild focal temperature difference detected ({round(temp_diff, 1)}°C between feet)."
+            else:
+                t_status = "Severe Thermal Asymmetry"
+                t_explain = f"Significant hotspot detected ({round(temp_diff, 1)}°C difference), indicating localized inflammation risk."
 
         # 3. Gait Deviation (30% Weight)
         asymmetry = float(gait_data.get('asymmetry', 0.0))

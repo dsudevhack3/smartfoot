@@ -60,8 +60,9 @@ class Patient(db.Model):
     gender = db.Column(db.String(20), nullable=False)
     assigned_doctor_id = db.Column(db.Integer, db.ForeignKey('doctors.id'), nullable=True)
     
-    # Baselines for deviation calculations
-    baseline_pressure_json = db.Column(db.Text, nullable=True)  # JSON string of 12 zones baseline (kPa)
+    # Baselines & Clinical Profile
+    amputated_foot = db.Column(db.String(10), nullable=True)  # 'LEFT', 'RIGHT', or None
+    baseline_pressure_json = db.Column(db.Text, nullable=True)  # JSON string of zones baseline (kPa)
     baseline_temp = db.Column(db.Float, default=32.5)  # Baseline foot temperature (°C)
     baseline_gait = db.Column(db.Float, default=95.0)  # Baseline gait symmetry %
 
@@ -70,7 +71,7 @@ class Patient(db.Model):
     telemetries = db.relationship('Telemetry', backref='patient', lazy=True, cascade="all, delete-orphan")
     alerts = db.relationship('Alert', backref='patient', lazy=True, cascade="all, delete-orphan")
 
-    def __init__(self, user_id=None, patient_code=None, age=None, gender=None, assigned_doctor_id=None, baseline_pressure=None, baseline_temp=32.5, baseline_gait=95.0, **kwargs):
+    def __init__(self, user_id=None, patient_code=None, age=None, gender=None, assigned_doctor_id=None, baseline_pressure=None, baseline_temp=32.5, baseline_gait=95.0, amputated_foot=None, **kwargs):
         super().__init__(**kwargs)
         if user_id is not None: self.user_id = user_id
         if patient_code is not None: self.patient_code = patient_code
@@ -80,6 +81,7 @@ class Patient(db.Model):
         if baseline_pressure is not None: self.baseline_pressure = baseline_pressure
         if baseline_temp is not None: self.baseline_temp = baseline_temp
         if baseline_gait is not None: self.baseline_gait = baseline_gait
+        if amputated_foot is not None: self.amputated_foot = amputated_foot
 
     @property
     def baseline_pressure(self):

@@ -95,7 +95,14 @@
       <div class="foot-map-container">
         <div class="feet-svg-wrapper">
           
-          <!-- LEFT FOOT SVG OUTLINE & 6 SENSORS -->
+          <!-- LEFT FOOT SVG OUTLINE / AMPUTATION NOTICE -->
+          {% if patient.amputated_foot == 'LEFT' %}
+          <div style="text-align: center; flex: 1; padding: 2rem 1rem; background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.3); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px;">
+            <i data-lucide="shield-alert" style="width: 36px; height: 36px; color: var(--risk-mod); margin-bottom: 0.75rem;"></i>
+            <div style="font-weight: 700; color: #fff; font-size: 0.9rem; margin-bottom: 0.3rem;">LEFT LIMB AMPUTATED</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); max-width: 180px;">Unilateral Right Foot Smart Insole Telemetry Active</div>
+          </div>
+          {% else %}
           <div style="text-align: center; flex: 1;">
             <svg viewBox="0 0 200 400" width="100%" height="280">
               <defs>
@@ -147,6 +154,8 @@
             </svg>
             <div class="foot-label">LEFT FOOT</div>
           </div>
+          {% endif %}
+
 
           <!-- RIGHT FOOT SVG OUTLINE & 6 SENSORS -->
           <div style="text-align: center; flex: 1;">

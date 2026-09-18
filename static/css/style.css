@@ -762,3 +762,27 @@ a:hover {
   text-align: center;
   line-height: 1.4;
 }
+
+/* Flash Messages Alert Banners */
+.flash-alert {
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.flash-alert.alert-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.flash-alert.alert-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #fde047;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+.flash-alert.alert-info, .flash-alert.alert-success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}

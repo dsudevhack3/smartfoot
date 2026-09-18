@@ -44,7 +44,6 @@ def seed_database():
     db.session.flush()
 
     sita_baseline_p = {
-        'L_heel': 34.0, 'L_lat_mid': 19.0, 'L_med_mid': 17.0, 'L_met1': 28.0, 'L_met5': 26.0, 'L_hallux': 24.0,
         'R_heel': 36.0, 'R_lat_mid': 21.0, 'R_med_mid': 19.0, 'R_met1': 32.0, 'R_met5': 30.0, 'R_hallux': 26.0
     }
     patient_sita = Patient(
@@ -55,7 +54,8 @@ def seed_database():
         assigned_doctor_id=doctor.id,
         baseline_pressure=sita_baseline_p,
         baseline_temp=32.2,
-        baseline_gait=92.0
+        baseline_gait=92.0,
+        amputated_foot="LEFT"
     )
     db.session.add(patient_sita)
     db.session.flush()
