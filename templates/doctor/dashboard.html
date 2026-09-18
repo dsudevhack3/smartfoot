@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block title %}Doctor Clinical Console — SmartFoot{% endblock %}
+
+{% block content %}
+<div class="doctor-layout">
+  
+  <!-- Left Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="sidebar-menu">
+      <a href="{{ url_for('doctor.dashboard') }}" class="sidebar-link active">
+        <i data-lucide="layout-dashboard"></i> Clinical Dashboard
+      </a>
+      <a href="#patient-registry-section" class="sidebar-link">
+        <i data-lucide="users"></i> Patient Registry
+      </a>
+      <a href="#active-alerts-section" class="sidebar-link">
+        <i data-lucide="alert-circle"></i> Active Alerts
+      </a>
+      <a href="#" class="sidebar-link" onclick="alert('Clinical reporting module active.')">
+        <i data-lucide="file-spreadsheet"></i> Clinical Reports
+      </a>
+      <a href="#" class="sidebar-link" onclick="alert('Doctor Settings & Calibration console.')">
+        <i data-lucide="settings"></i> Settings
+      </a>
+    </div>
+
+    <!-- Bottom Persistent Active Smart Insole Widget -->
+    <div class="persistent-widget">
+      <div style="font-weight: 700; color: #fff; margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.3rem;">
+        ⚡ SMART INSOLE ACTIVE
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.7rem; line-height: 1.3;">
+        Continuous 12-zone bilateral pressure and differential temperature monitoring system.
+      </p>
+      <div style="margin-top: 0.5rem; font-weight: 600; color: var(--primary-cyan); font-size: 0.7rem;">
+        Podiatry Helpline: 1-800-SMARTFOOT
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Clinical Console Workspace -->
+  <main class="main-content" style="max-width: 100%;">
+    
+    <!-- Time-aware Greeting Header -->
+    <div class="dashboard-banner">
+      <div>
+        <h1 class="banner-title" id="time-greeting">Good day, Dr. {{ doctor.user.name }}</h1>
+        <p class="banner-subtitle">
+          Diabetic foot tele-monitoring and multi-patient risk stratification console.
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem;">
+        <span style="background: rgba(16, 185, 129, 0.15); color: var(--risk-low); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.4rem 0.85rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700;">
+          {{ stats.total_patients }} Active Insole Feeds
+        </span>
+      </div>
+    </div>
+
+    <!-- 5 Summary Stat Cards -->
+    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+      
+      <div class="stat-card">
+        <div class="stat-header">Total Patients</div>
+        <div class="stat-value">{{ stats.total_patients }}</div>
+        <div class="stat-footer">Assigned tele-monitoring cohort</div>
+      </div>
+
+      <div class="stat-card" style="border-left: 4px solid var(--risk-low);">
+        <div class="stat-header">Low Risk</div>
+        <div class="stat-value" style="color: var(--risk-low);">{{ stats.low_risk }}</div>
+        <div class="stat-footer">Baseline stable</div>
+      </div>
+
+      <div class="stat-card" style="border-left: 4px solid var(--risk-mod);">
+        <div class="stat-header">Moderate Risk</div>
+        <div class="stat-value" style="color: var(--risk-mod);">{{ stats.mod_risk }}</div>
+        <div class="stat-footer">Requires 3-day follow-up</div>
+      </div>
+
+      <div class="stat-card" style="border-left: 4px solid var(--risk-high);">
+        <div class="stat-header">High Risk</div>
+        <div class="stat-value" style="color: var(--risk-high);">{{ stats.high_risk }}</div>
+        <div class="stat-footer" style="color: #fca5a5;">Requires clinical attention</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">Active Alerts</div>
+        <div class="stat-value" style="color: {% if stats.active_alerts > 0 %}var(--risk-high){% else %}var(--text-main){% endif %};">
+          {{ stats.active_alerts }}
+        </div>
+        <div class="stat-footer">Unacknowledged notices</div>
+      </div>
+
+    </div>
+
+    <!-- Patient Monitoring Registry Table -->
+    <div class="card-box" id="patient-registry-section" style="margin-bottom: 1.5rem;">
+      <div class="card-title-group" style="flex-wrap: wrap; gap: 0.75rem;">
+        <h2 class="card-title">
+          <i data-lucide="users" style="color: var(--primary-cyan);"></i> Patient Tele-monitoring Registry
+        </h2>
+
+        <!-- Filter Pills & Search Box -->
+        <div style="display: flex; items-center; gap: 0.75rem; flex-wrap: wrap;">
+          <input type="text" id="registry-search" class="form-input" placeholder="Search patient by name or ID..." style="width: 220px; padding: 0.4rem 0.75rem; font-size: 0.8rem;">
+          
+          <div style="display: flex; gap: 0.3rem;">
+            <button class="btn-filter active" data-filter="ALL" onclick="filterRegistry('ALL')">ALL</button>
+            <button class="btn-filter" data-filter="HIGH" onclick="filterRegistry('HIGH')">HIGH RISK</button>
+            <button class="btn-filter" data-filter="MODERATE" onclick="filterRegistry('MODERATE')">MODERATE</button>
+            <button class="btn-filter" data-filter="LOW" onclick="filterRegistry('LOW')">LOW RISK</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="clinical-table" id="registry-table">
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>Risk Index</th>
+              <th>Peak Pressure</th>
+              <th>Temp Asymmetry</th>
+              <th>Gait Symmetry</th>
+              <th>Active Alerts</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in patient_rows %}
+            <tr class="registry-row" data-risk="{{ row.risk_level }}" data-name="{{ row.user.name|lower }}" data-code="{{ row.patient.patient_code|lower }}">
+              <td>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                  <img src="{{ row.user.profile_photo_url }}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;" alt="{{ row.user.name }}">
+                  <div>
+                    <div style="font-weight: 700; color: #fff;">{{ row.user.name }}</div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted);">{{ row.patient.patient_code }} • {{ row.patient.age }}y {{ row.patient.gender }}</div>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <span class="risk-level-badge {{ row.risk_level }}">
+                  {{ row.risk_level }} ({{ row.risk_score }})
+                </span>
+              </td>
+
+              <td>
+                <span style="font-weight: 700;">{{ row.peak_pressure }}</span> kPa
+              </td>
+
+              <td>
+                <span style="font-weight: 700; color: {% if row.temp_diff >= 2.0 %}var(--risk-high){% elif row.temp_diff >= 1.0 %}var(--risk-mod){% else %}var(--text-main){% endif %};">
+                  Δ {{ row.temp_diff }}°C
+                </span>
+              </td>
+
+              <td>
+                <span style="font-weight: 700;">{{ row.gait_symmetry }}%</span>
+              </td>
+
+              <td>
+                {% if row.active_alerts_count > 0 %}
+                <span style="background: rgba(239, 68, 68, 0.2); color: var(--risk-high); border: 1px solid rgba(239, 68, 68, 0.4); padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700;">
+                  {{ row.active_alerts_count }} Active
+                </span>
+                {% else %}
+                <span style="color: var(--text-dim); font-size: 0.8rem;">None</span>
+                {% endif %}
+              </td>
+
+              <td>
+                <span style="font-size: 0.75rem; color: var(--risk-low); font-weight: 600;">
+                  <span class="pulse-dot" style="display: inline-block; vertical-align: middle; margin-right: 4px;"></span>
+                  {{ row.last_updated }}
+                </span>
+              </td>
+
+              <td>
+                <a href="{{ url_for('doctor.patient_detail', patient_id=row.patient.id) }}" class="btn-primary" style="padding: 0.3rem 0.75rem; font-size: 0.75rem; width: auto; display: inline-flex; align-items: center; gap: 0.3rem;">
+                  Inspect <i data-lucide="chevron-right" style="width: 14px; height: 14px;"></i>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {% if demo_mode %}
+    <!-- Floating Demo Simulator Controls (Gated strictly behind DEMO_MODE) -->
+    <div class="card-box" style="background: rgba(6, 182, 212, 0.05); border-color: var(--border-glow);">
+      <div class="card-title-group">
+        <h2 class="card-title">
+          <i data-lucide="sliders" style="color: var(--primary-cyan);"></i> Live Demo Simulator Controls
+        </h2>
+        <span style="font-size: 0.75rem; color: var(--primary-cyan);">Simulate scenario changes per patient independently</span>
+      </div>
+
+      <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+        {% for row in patient_rows %}
+        <div style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 0.85rem; border-radius: 8px; flex: 1; min-width: 240px;">
+          <div style="font-weight: 700; color: #fff; margin-bottom: 0.5rem; font-size: 0.85rem;">
+            {{ row.user.name }} ({{ row.patient.patient_code }})
+          </div>
+          
+          <div style="display: flex; gap: 0.4rem;">
+            <button type="button" class="btn-range" onclick="triggerSimScenario({{ row.patient.id }}, 'NORMAL')">Set Normal</button>
+            <button type="button" class="btn-range" onclick="triggerSimScenario({{ row.patient.id }}, 'MODERATE')">Set Moderate</button>
+            <button type="button" class="btn-range" onclick="triggerSimScenario({{ row.patient.id }}, 'HIGH_RISK')">Set High Spike</button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+  .btn-filter {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-filter.active {
+    background: rgba(6, 182, 212, 0.2);
+    color: var(--primary-cyan);
+    border-color: var(--border-glow);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Time-aware greeting calculation
+    const hour = new Date().getHours();
+    const greetingEl = document.getElementById('time-greeting');
+    let timeStr = 'Good day';
+    if (hour < 12) timeStr = 'Good morning';
+    else if (hour < 17) timeStr = 'Good afternoon';
+    else timeStr = 'Good evening';
+    
+    if (greetingEl) {
+      greetingEl.textContent = `${timeStr}, Dr. {{ doctor.user.name }}`;
+    }
+
+    // Search filter input listener
+    const searchInput = document.getElementById('registry-search');
+    if (searchInput) {
+      searchInput.addEventListener('input', () => filterRegistry());
+    }
+  });
+
+  let currentFilter = 'ALL';
+
+  function filterRegistry(filter) {
+    if (filter) currentFilter = filter;
+
+    document.querySelectorAll('.btn-filter').forEach(b => {
+      b.classList.toggle('active', b.getAttribute('data-filter') === currentFilter);
+    });
+
+    const searchVal = (document.getElementById('registry-search')?.value || '').toLowerCase();
+
+    document.querySelectorAll('.registry-row').forEach(row => {
+      const risk = row.getAttribute('data-risk');
+      const name = row.getAttribute('data-name');
+      const code = row.getAttribute('data-code');
+
+      const matchesRisk = (currentFilter === 'ALL') || (risk === currentFilter);
+      const matchesSearch = !searchVal || name.includes(searchVal) || code.includes(searchVal);
+
+      row.style.display = (matchesRisk && matchesSearch) ? '' : 'none';
+    });
+  }
+
+  function triggerSimScenario(patientId, scenario) {
+    fetch(`/doctor/api/sim-toggle/${patientId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scenario: scenario })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert(data.message);
+        window.location.reload();
+      } else {
+        alert(data.message);
+      }
+    })
+    .catch(err => alert('Failed to set scenario.'));
+  }
+</script>
+{% endblock %}

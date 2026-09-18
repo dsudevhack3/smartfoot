@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}System Settings & Architecture — SmartFoot{% endblock %}
+
+{% block content %}
+<div class="main-content" style="max-width: 900px;">
+  
+  <div class="dashboard-banner">
+    <div>
+      <h1 class="banner-title">System Architecture & Known Limitations</h1>
+      <p class="banner-subtitle">SmartFoot IoT Diabetic Foot Monitoring Platform Specifications</p>
+    </div>
+  </div>
+
+  <!-- Medical Disclaimer Notice Box (Section 15) -->
+  <div class="card-box" style="border-left: 4px solid var(--risk-mod); margin-bottom: 1.5rem;">
+    <div class="card-title-group">
+      <h2 class="card-title" style="color: var(--risk-mod);">
+        <i data-lucide="alert-triangle"></i> Mandatory Medical Disclaimer
+      </h2>
+    </div>
+    <p style="font-size: 0.9rem; color: #e5e7eb; line-height: 1.6;">
+      "SmartFoot is a monitoring tool for educational and research purposes. It is not a medical device and has not been validated for clinical use. Do not use for medical diagnosis or treatment decisions. Consult qualified healthcare professionals for medical advice."
+    </p>
+  </div>
+
+  <!-- Section 16 Known Limitations Card -->
+  <div class="card-box" style="margin-bottom: 1.5rem;">
+    <div class="card-title-group">
+      <h2 class="card-title">
+        <i data-lucide="info" style="color: var(--primary-cyan);"></i> Known Platform Limitations
+      </h2>
+    </div>
+
+    <ul style="list-style: disc; padding-left: 1.25rem; font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.6rem;">
+      <li><strong>Sensor Calibration Requirement:</strong> FSR pressure sensors and DS18B20 thermal probes require periodic zero-point calibration for optimal clinical precision.</li>
+      <li><strong>Configurable Risk Thresholds:</strong> Risk score thresholds (LOW <30, MODERATE 30-60, HIGH >60) are configurable research parameters and explicitly not clinically validated FDA thresholds.</li>
+      <li><strong>Concurrency Scope:</strong> Single-file SQLite database configuration is designed for research demonstrations; production scale deployment requires PostgreSQL.</li>
+      <li><strong>Regulatory Status:</strong> Not FDA approved. Strictly intended for research, prototype evaluation, and observational demonstration.</li>
+      <li><strong>Demo Mode Authentication:</strong> Static OTP code (`123456`) is provided for testing convenience in demo mode and must be swapped with SMTP email delivery prior to production deployment.</li>
+    </ul>
+  </div>
+
+  <!-- Device Hardware Status Card -->
+  <div class="card-box">
+    <div class="card-title-group">
+      <h2 class="card-title">
+        <i data-lucide="cpu" style="color: var(--teal-accent);"></i> Connected ESP32 Hardware Status
+      </h2>
+    </div>
+
+    <div style="font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.4rem;">
+      <div>Associated Patient: <strong>{{ patient.user.name }} ({{ patient.patient_code }})</strong></div>
+      <div>Device ID: <code>{{ patient.device.device_id if patient.device else 'ESP32-UNKNOWN' }}</code></div>
+      <div>Device Token: <code>{{ patient.device.device_token if patient.device else 'N/A' }}</code></div>
+      <div>Hardware Status: <span style="color: var(--risk-low); font-weight: 700;">{{ patient.device.status if patient.device else 'OFFLINE' }}</span></div>
+      <div>Telemetry Pipeline: ESP32 HTTP POST <code>/api/v1/telemetry</code> → Flask API → Risk Engine → SocketIO <code>patient_{{ patient.id }}</code> room</div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

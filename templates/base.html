@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SmartFoot — Tele-monitoring Engine{% endblock %}</title>
+
+  <!-- Google Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- SocketIO & Chart.js -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- App Custom Styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  {% if current_user.is_authenticated %}
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <div class="nav-logo-icon">SF</div>
+      <div>
+        <span class="brand-title">SmartFoot</span>
+        <span class="brand-tag">PROTOTYPE</span>
+      </div>
+    </div>
+
+    {% if current_user.role == 'PATIENT' and current_user.patient_profile %}
+    <!-- Real-time WebSocket Connection Status Pill -->
+    <div class="nav-status-pill" id="connection-status-pill">
+      <span class="pulse-dot" id="connection-pulse-dot"></span>
+      <span id="connection-status-text">Sensor Connected | Streaming live</span>
+    </div>
+    {% endif %}
+
+    <div class="nav-controls">
+      <button class="btn-emergency" onclick="alert('Emergency Tele-triage Contacted: Call 911 or your primary podiatric care specialist immediately.')">
+        <i data-lucide="phone-call" style="width:14px; height:14px;"></i> Emergency Help
+      </button>
+
+      <div class="user-profile-badge">
+        <img src="{{ current_user.profile_photo_url or 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80' }}" class="user-avatar" alt="Avatar">
+        <div style="font-size: 0.8rem; font-weight: 600; color: #fff;">
+          {{ current_user.name }}
+          <span style="font-size:0.7rem; color: var(--text-muted); display:block;">{{ current_user.role }}</span>
+        </div>
+      </div>
+
+      <a href="{{ url_for('auth.logout') }}" style="color: var(--text-muted); padding: 0.4rem;" title="Sign out">
+        <i data-lucide="log-out" style="width:18px; height:18px;"></i>
+      </a>
+    </div>
+  </header>
+  {% endif %}
+
+  <!-- Flash Messages Banner -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div style="max-width: 1400px; margin: 1rem auto; padding: 0 1.5rem;">
+        {% for category, message in messages %}
+          <div style="padding: 0.85rem 1.25rem; border-radius: 8px; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 600;
+                      background: {% if category=='danger' %}rgba(239,68,68,0.15){% elif category=='warning' %}rgba(245,158,11,0.15){% else %}rgba(16,185,129,0.15){% endif %};
+                      color: {% if category=='danger' %}#fca5a5{% elif category=='warning' %}#fde047{% else %}#6ee7b7{% endif %};
+                      border: 1px solid {% if category=='danger' %}rgba(239,68,68,0.3){% elif category=='warning' %}rgba(245,158,11,0.3){% else %}rgba(16,185,129,0.3){% endif %};">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Main View Content -->
+  {% block content %}{% endblock %}
+
+  <!-- App Core JS Assets -->
+  <script src="{{ url_for('static', filename='js/socket_client.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/foot_map.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/risk_gauge.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/trends_charts.js') }}"></script>
+
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

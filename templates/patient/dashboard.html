@@ -1,0 +1,411 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Telemetry Dashboard — SmartFoot{% endblock %}
+
+{% block content %}
+<div class="main-content">
+  
+  <!-- Dashboard Banner Greeting -->
+  <div class="dashboard-banner">
+    <div>
+      <h1 class="banner-title">Welcome, {{ patient.user.name }}</h1>
+      <p class="banner-subtitle">
+        Patient ID: <strong>{{ patient.patient_code }}</strong> • Age {{ patient.age }} {{ patient.gender }} • Assigned to 
+        <strong>Dr. {{ patient.assigned_doctor.user.name if patient.assigned_doctor else 'Unassigned' }}</strong>
+      </p>
+    </div>
+    
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+      <span style="background: rgba(6, 182, 212, 0.15); color: var(--primary-cyan); border: 1px solid var(--border-glow); padding: 0.35rem 0.85rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.4rem;">
+        <span class="pulse-dot"></span> Live Telemetry
+      </span>
+      <span id="last-updated-ticker" style="font-size: 0.8rem; color: var(--text-dim); font-weight: 500;">Updated 0s ago</span>
+    </div>
+  </div>
+
+  <!-- 4 Live Sensor Stat Cards -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-header">
+        <span>Peak Plantar Pressure</span>
+        <div class="stat-icon-box"><i data-lucide="gauge" style="width: 20px; height: 20px;"></i></div>
+      </div>
+      <div class="stat-value" id="stat-peak-pressure">
+        {% set peak_p = pressure_zones.values()|max if pressure_zones else 30.0 %}
+        {{ peak_p|round(1) }} <span class="stat-unit">kPa</span>
+      </div>
+      <div class="stat-footer">
+        <i data-lucide="info" style="width: 12px; height: 12px;"></i> Baseline ~30.0 kPa
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-header">
+        <span>Temp Asymmetry (L/R)</span>
+        <div class="stat-icon-box" style="background: rgba(245, 158, 11, 0.1); color: var(--risk-mod);"><i data-lucide="thermometer" style="width: 20px; height: 20px;"></i></div>
+      </div>
+      <div class="stat-value" id="stat-temp-diff">
+        Δ {{ temp_diff }} <span class="stat-unit">°C</span>
+      </div>
+      <div class="stat-footer">
+        L: <span id="stat-temp-left">{{ temp_left }}°C</span> • R: <span id="stat-temp-right">{{ temp_right }}°C</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-header">
+        <span>Gait Symmetry</span>
+        <div class="stat-icon-box" style="background: rgba(16, 185, 129, 0.1); color: var(--risk-low);"><i data-lucide="footprints" style="width: 20px; height: 20px;"></i></div>
+      </div>
+      <div class="stat-value" id="stat-gait-sym">
+        {% set sym = [0.0, 100.0 - gait.asymmetry]|max %}
+        {{ sym|round(1) }} <span class="stat-unit">%</span>
+      </div>
+      <div class="stat-footer">
+        IMU Stance Phase Cadence: {{ gait.cadence }} bpm
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-header">
+        <span>Active Clinical Alerts</span>
+        <div class="stat-icon-box" style="background: rgba(239, 68, 68, 0.1); color: var(--risk-high);"><i data-lucide="bell" style="width: 20px; height: 20px;"></i></div>
+      </div>
+      <div class="stat-value" style="color: {% if active_alerts %}var(--risk-high){% else %}var(--risk-low){% endif %};">
+        {{ active_alerts|length }}
+      </div>
+      <div class="stat-footer">
+        {% if active_alerts %}{{ active_alerts[0].title }}{% else %}No active alerts{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Grid: Foot Pressure Map + Risk Engine Centerpiece -->
+  <div class="dashboard-grid-2col">
+    
+    <!-- Anatomical 12-Zone Bilateral Foot Pressure SVG Map -->
+    <div class="card-box">
+      <div class="card-title-group">
+        <h2 class="card-title">
+          <i data-lucide="footprints" style="color: var(--primary-cyan);"></i> Live Bilateral Plantar Pressure Map
+        </h2>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">12-Zone FSR Array</span>
+      </div>
+
+      <div class="foot-map-container">
+        <div class="feet-svg-wrapper">
+          
+          <!-- LEFT FOOT SVG OUTLINE & 6 SENSORS -->
+          <div style="text-align: center; flex: 1;">
+            <svg viewBox="0 0 200 400" width="100%" height="280">
+              <defs>
+                <filter id="glow-filter" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+              
+              <!-- Left Foot Anatomical Sole Outline -->
+              <path d="M 90 20 C 130 20, 140 60, 135 110 C 130 150, 120 180, 115 220 C 110 260, 120 320, 110 360 C 100 395, 40 395, 35 360 C 30 320, 45 260, 45 220 C 45 180, 30 150, 35 110 C 40 60, 50 20, 90 20 Z" 
+                    fill="none" stroke="rgba(255, 255, 255, 0.2)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              
+              <!-- 6 Left Foot Sensor Glow Circles & Nodes -->
+              <!-- 1. Hallux (Big Toe) -->
+              <circle id="sensor-glow-L_hallux" cx="90" cy="45" r="22" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
+              <circle id="sensor-node-L_hallux" cx="90" cy="45" r="10" fill="#0066ff"/>
+              <text id="sensor-val-L_hallux" x="90" y="49" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">24k</text>
+              <text x="90" y="30" font-size="8" fill="var(--text-muted)" text-anchor="middle">Hallux</text>
+
+              <!-- 2. 1st Metatarsal Head (Medial Forefoot) -->
+              <circle id="sensor-glow-L_met1" cx="75" cy="115" r="22" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
+              <circle id="sensor-node-L_met1" cx="75" cy="115" r="10" fill="#0066ff"/>
+              <text id="sensor-val-L_met1" x="75" y="119" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">28k</text>
+
+              <!-- 3. 5th Metatarsal Head (Lateral Forefoot) -->
+              <circle id="sensor-glow-L_met5" cx="115" cy="125" r="22" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
+              <circle id="sensor-node-L_met5" cx="115" cy="125" r="10" fill="#0066ff"/>
+              <text id="sensor-val-L_met5" x="115" y="129" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">26k</text>
+
+              <!-- 4. Medial Midfoot / Arch -->
+              <circle id="sensor-glow-L_med_mid" cx="65" cy="210" r="20" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
+              <circle id="sensor-node-L_med_mid" cx="65" cy="210" r="9" fill="#0066ff"/>
+              <text id="sensor-val-L_med_mid" x="65" y="213" font-size="8" font-weight="800" fill="#fff" text-anchor="middle">17k</text>
+
+              <!-- 5. Lateral Midfoot -->
+              <circle id="sensor-glow-L_lat_mid" cx="105" cy="220" r="20" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
+              <circle id="sensor-node-L_lat_mid" cx="105" cy="220" r="9" fill="#0066ff"/>
+              <text id="sensor-val-L_lat_mid" x="105" y="223" font-size="8" font-weight="800" fill="#fff" text-anchor="middle">19k</text>
+
+              <!-- 6. Left Heel -->
+              <circle id="sensor-glow-L_heel" cx="72" cy="340" r="24" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
+              <circle id="sensor-node-L_heel" cx="72" cy="340" r="12" fill="#0066ff"/>
+              <text id="sensor-val-L_heel" x="72" y="344" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">34k</text>
+              <text x="72" y="365" font-size="8" fill="var(--text-muted)" text-anchor="middle">Heel</text>
+            </svg>
+            <div class="foot-label">LEFT FOOT</div>
+          </div>
+
+          <!-- RIGHT FOOT SVG OUTLINE & 6 SENSORS -->
+          <div style="text-align: center; flex: 1;">
+            <svg viewBox="0 0 200 400" width="100%" height="280">
+              <!-- Right Foot Anatomical Sole Outline -->
+              <path d="M 110 20 C 70 20, 60 60, 65 110 C 70 150, 80 180, 85 220 C 90 260, 80 320, 90 360 C 100 395, 160 395, 165 360 C 170 320, 155 260, 155 220 C 155 180, 170 150, 165 110 C 160 60, 150 20, 110 20 Z" 
+                    fill="none" stroke="rgba(255, 255, 255, 0.2)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+              
+              <!-- 6 Right Foot Sensor Glow Circles & Nodes -->
+              <!-- 1. Hallux (Big Toe) -->
+              <circle id="sensor-glow-R_hallux" cx="110" cy="45" r="22" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
+              <circle id="sensor-node-R_hallux" cx="110" cy="45" r="10" fill="#0066ff"/>
+              <text id="sensor-val-R_hallux" x="110" y="49" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">26k</text>
+              <text x="110" y="30" font-size="8" fill="var(--text-muted)" text-anchor="middle">Hallux</text>
+
+              <!-- 2. 1st Metatarsal Head (Medial Forefoot) -->
+              <circle id="sensor-glow-R_met1" cx="125" cy="115" r="22" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
+              <circle id="sensor-node-R_met1" cx="125" cy="115" r="10" fill="#0066ff"/>
+              <text id="sensor-val-R_met1" x="125" y="119" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">32k</text>
+
+              <!-- 3. 5th Metatarsal Head (Lateral Forefoot) -->
+              <circle id="sensor-glow-R_met5" cx="85" cy="125" r="22" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
+              <circle id="sensor-node-R_met5" cx="85" cy="125" r="10" fill="#0066ff"/>
+              <text id="sensor-val-R_met5" x="85" y="129" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">30k</text>
+
+              <!-- 4. Medial Midfoot / Arch -->
+              <circle id="sensor-glow-R_med_mid" cx="135" cy="210" r="20" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
+              <circle id="sensor-node-R_med_mid" cx="135" cy="210" r="9" fill="#0066ff"/>
+              <text id="sensor-val-R_med_mid" x="135" y="213" font-size="8" font-weight="800" fill="#fff" text-anchor="middle">19k</text>
+
+              <!-- 5. Lateral Midfoot -->
+              <circle id="sensor-glow-R_lat_mid" cx="95" cy="220" r="20" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
+              <circle id="sensor-node-R_lat_mid" cx="95" cy="220" r="9" fill="#0066ff"/>
+              <text id="sensor-val-R_lat_mid" x="95" y="223" font-size="8" font-weight="800" fill="#fff" text-anchor="middle">21k</text>
+
+              <!-- 6. Right Heel -->
+              <circle id="sensor-glow-R_heel" cx="128" cy="340" r="24" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
+              <circle id="sensor-node-R_heel" cx="128" cy="340" r="12" fill="#0066ff"/>
+              <text id="sensor-val-R_heel" x="128" y="344" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">36k</text>
+              <text x="128" y="365" font-size="8" fill="var(--text-muted)" text-anchor="middle">Heel</text>
+            </svg>
+            <div class="foot-label">RIGHT FOOT</div>
+          </div>
+
+        </div>
+
+        <div class="heatmap-legend">
+          <span>0 kPa</span>
+          <div class="legend-bar"></div>
+          <span>100+ kPa</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual Centerpiece: Risk Prediction Engine Gauge & Breakdown -->
+    <div class="card-box risk-centerpiece">
+      <div class="card-title-group">
+        <h2 class="card-title">
+          <i data-lucide="shield-alert" style="color: var(--primary-cyan);"></i> Ulcer Risk Prediction Engine
+        </h2>
+        <span class="risk-level-badge {{ risk_data.level }}" id="risk-level-badge">{{ risk_data.level }}</span>
+      </div>
+
+      <!-- Ring Gauge & Composite Score -->
+      <div class="gauge-row">
+        <div class="gauge-circle-container">
+          <svg class="gauge-svg" width="150" height="150" viewBox="0 0 160 160">
+            <circle class="gauge-bg" cx="80" cy="80" r="70" fill="none"/>
+            <circle class="gauge-progress" id="risk-gauge-progress" cx="80" cy="80" r="70" fill="none"/>
+          </svg>
+          <div class="gauge-center-text">
+            <div class="gauge-score" id="risk-gauge-score">{{ risk_data.score|round|int }}</div>
+            <div class="gauge-label">RISK INDEX</div>
+          </div>
+        </div>
+
+        <div style="flex: 1;">
+          <div class="takeaway-box" id="risk-takeaway-text">
+            {{ risk_data.takeaway }}
+          </div>
+        </div>
+      </div>
+
+      <!-- 40 / 30 / 30 Weighted Factor Breakdown Cards -->
+      <div class="factor-breakdown-list">
+        
+        <!-- Factor 1: Pressure (40%) -->
+        <div class="factor-card">
+          <div class="factor-header">
+            <span>Plantary Pressure Deviation (40% Weight)</span>
+            <span id="factor-status-pressure" style="color: var(--primary-cyan);">
+              {{ risk_data.factors.pressure.status }} ({{ risk_data.factors.pressure.score }}/100)
+            </span>
+          </div>
+          <div class="factor-bar-bg">
+            <div class="factor-bar-fill" id="factor-bar-pressure" style="width: {{ risk_data.factors.pressure.score }}%;"></div>
+          </div>
+          <div class="factor-explanation" id="factor-desc-pressure">
+            {{ risk_data.factors.pressure.explanation }}
+          </div>
+        </div>
+
+        <!-- Factor 2: Temperature (30%) -->
+        <div class="factor-card">
+          <div class="factor-header">
+            <span>Thermal Asymmetry (30% Weight)</span>
+            <span id="factor-status-temp" style="color: var(--risk-mod);">
+              {{ risk_data.factors.temperature.status }} ({{ risk_data.factors.temperature.score }}/100)
+            </span>
+          </div>
+          <div class="factor-bar-bg">
+            <div class="factor-bar-fill" id="factor-bar-temp" style="width: {{ risk_data.factors.temperature.score }}%; background: var(--risk-mod);"></div>
+          </div>
+          <div class="factor-explanation" id="factor-desc-temp">
+            {{ risk_data.factors.temperature.explanation }}
+          </div>
+        </div>
+
+        <!-- Factor 3: Gait (30%) -->
+        <div class="factor-card">
+          <div class="factor-header">
+            <span>IMU Gait Deviation (30% Weight)</span>
+            <span id="factor-status-gait" style="color: var(--risk-low);">
+              {{ risk_data.factors.gait.status }} ({{ risk_data.factors.gait.score }}/100)
+            </span>
+          </div>
+          <div class="factor-bar-bg">
+            <div class="factor-bar-fill" id="factor-bar-gait" style="width: {{ risk_data.factors.gait.score }}%; background: var(--risk-low);"></div>
+          </div>
+          <div class="factor-explanation" id="factor-desc-gait">
+            {{ risk_data.factors.gait.explanation }}
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Active Alerts Panel -->
+  <div class="card-box" style="margin-bottom: 1.5rem;">
+    <div class="card-title-group">
+      <h2 class="card-title">
+        <i data-lucide="bell-ring" style="color: var(--risk-high);"></i> Active Automated Alerts
+      </h2>
+      <span style="font-size: 0.75rem; color: var(--text-dim);">Deduplicated per event</span>
+    </div>
+
+    <div id="alerts-panel-list">
+      {% if active_alerts %}
+        {% for a in active_alerts %}
+        <div class="alert-item {{ a.severity }}">
+          <div class="alert-icon-box">
+            <i data-lucide="alert-triangle" style="width: 22px; height: 22px;"></i>
+          </div>
+          <div style="flex: 1;">
+            <div class="alert-title">{{ a.title }}</div>
+            <div class="alert-desc">{{ a.description }}</div>
+            <div class="alert-time">
+              Detected {{ a.created_at.strftime('%b %d, %H:%M:%S') }} • Severity: <strong>{{ a.severity }}</strong>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.85rem;">
+          <i data-lucide="check-circle-2" style="width: 32px; height: 32px; color: var(--risk-low); display: block; margin: 0 auto 0.5rem;"></i>
+          All sensor telemetry within safe operating parameters. No active alerts.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Trends & History Charts Section -->
+  <div class="card-box">
+    <div class="card-title-group">
+      <h2 class="card-title">
+        <i data-lucide="line-chart" style="color: var(--primary-cyan);"></i> Telemetry Trends & Historical Analysis
+      </h2>
+      
+      <!-- Time Range Selector Buttons -->
+      <div style="display: flex; gap: 0.4rem;" id="range-btn-group">
+        <button class="btn-range active" data-range="day" onclick="setChartRange('day')">Day</button>
+        <button class="btn-range" data-range="week" onclick="setChartRange('week')">Week</button>
+        <button class="btn-range" data-range="month" onclick="setChartRange('month')">Month</button>
+        <button class="btn-range" data-range="3m" onclick="setChartRange('3m')">3 Months</button>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+      <div style="height: 240px;">
+        <canvas id="chart-temperature"></canvas>
+      </div>
+      <div style="height: 240px;">
+        <canvas id="chart-pressure"></canvas>
+      </div>
+      <div style="height: 240px;">
+        <canvas id="chart-gait"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+  .btn-range {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 0.3rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-range.active, .btn-range:hover {
+    background: rgba(6, 182, 212, 0.15);
+    color: var(--primary-cyan);
+    border-color: var(--border-glow);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // 1. Initialize SocketIO Connection for Patient
+    window.initSmartfootSocket({{ patient.id }});
+
+    // 2. Initialize Initial Foot Map & Risk Gauge
+    const initialZones = {{ pressure_zones|tojson }};
+    if (window.FootPressureMap && initialZones) {
+      window.FootPressureMap.update(initialZones);
+    }
+    
+    if (window.RiskGaugeRenderer) {
+      window.RiskGaugeRenderer.update(
+        {{ risk_data.score }},
+        "{{ risk_data.level }}",
+        "{{ risk_data.takeaway }}",
+        {{ risk_data.factors|tojson }}
+      );
+    }
+
+    // 3. Initialize Charts
+    if (window.SmartfootChartsManager) {
+      window.SmartfootChartsManager.init('week');
+    }
+  });
+
+  function setChartRange(range) {
+    document.querySelectorAll('#range-btn-group .btn-range').forEach(b => {
+      b.classList.toggle('active', b.getAttribute('data-range') === range);
+    });
+    if (window.SmartfootChartsManager) {
+      window.SmartfootChartsManager.fetchAndRender(range);
+    }
+  }
+</script>
+{% endblock %}
