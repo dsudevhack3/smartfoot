@@ -11,7 +11,7 @@ from seed_data import seed_database
 from simulator import SimulatorManager
 from models import User
 
-def create_app():
+def create_app(start_simulators=True):
     app = Flask(__name__)
     app.config.from_object(Config)
 
@@ -53,7 +53,7 @@ def create_app():
             seed_database()
 
         # Start background simulator threads if DEMO_MODE is True
-        if Config.DEMO_MODE:
+        if Config.DEMO_MODE and start_simulators:
             SimulatorManager.start_all(app)
 
     return app
@@ -62,4 +62,4 @@ app = create_app()
 
 if __name__ == '__main__':
     print("Starting SMARTFOOT Tele-monitoring Application on http://127.0.0.1:5000 ...")
-    socketio.run(app, host='127.0.0.1', port=5000, debug=True)
+    socketio.run(app, host='127.0.0.1', port=5000, debug=False, use_reloader=False)

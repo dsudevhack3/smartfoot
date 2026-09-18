@@ -111,6 +111,20 @@
     const emailInput = document.getElementById('login-email');
     const otpInput = document.getElementById('login-otp');
 
+    emailInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        btnRequest.click();
+      }
+    });
+
+    otpInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        btnVerify.click();
+      }
+    });
+
     btnRequest.addEventListener('click', () => {
       const email = emailInput.value.trim();
       if (!email) {
@@ -133,6 +147,7 @@
 
         if (data.success) {
           otpSection.style.display = 'block';
+          otpInput.value = '123456';  // Pre-fill demo OTP code for convenience
           otpInput.focus();
         } else {
           alert(data.message || 'Error sending OTP.');

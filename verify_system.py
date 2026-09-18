@@ -11,7 +11,7 @@ from seed_data import seed_database
 
 class SmartfootSystemTests(unittest.TestCase):
     def setUp(self):
-        self.app = create_app()
+        self.app = create_app(start_simulators=False)
         self.app.config['TESTING'] = True
         self.client = self.app.test_client()
         with self.app.app_context():

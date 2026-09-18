@@ -199,3 +199,10 @@ def seed_database():
 
     db.session.commit()
     print("Database seeding completed successfully!")
+
+
+if __name__ == '__main__':
+    from app import create_app
+    app = create_app(start_simulators=False)
+    with app.app_context():
+        seed_database()
