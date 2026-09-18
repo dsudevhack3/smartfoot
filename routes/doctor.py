@@ -87,6 +87,27 @@ def dashboard():
             'last_updated': last_seen
         })
 
+    # Featured patient telemetry data for the live insole map centerpiece
+    featured_patient = assigned_patients[0] if assigned_patients else None
+    if featured_patient:
+        latest_ft = Telemetry.query.filter_by(patient_id=featured_patient.id).order_by(Telemetry.timestamp.desc()).first()
+        if latest_ft:
+            ft_p_zones = latest_ft.pressure_zones
+            ft_tl = latest_ft.temperature_left
+            ft_tr = latest_ft.temperature_right
+            ft_gait = latest_ft.gait_data
+            ft_risk_data = RiskEngine.calculate(featured_patient, ft_p_zones, ft_tl, ft_tr, ft_gait)
+        else:
+            ft_p_zones = featured_patient.baseline_pressure
+            ft_tl, ft_tr = 32.0, 32.0
+            ft_gait = {'cadence': 100, 'asymmetry': 0.0, 'impact_g': 1.1}
+            ft_risk_data = RiskEngine.calculate(featured_patient, ft_p_zones, ft_tl, ft_tr, ft_gait)
+    else:
+        ft_p_zones = {}
+        ft_tl, ft_tr = 32.0, 32.0
+        ft_gait = {'cadence': 100, 'asymmetry': 0.0, 'impact_g': 1.1}
+        ft_risk_data = {'score': 15, 'level': 'LOW', 'takeaway': 'Baseline stable.'}
+
     return render_template(
         'doctor/dashboard.html',
         doctor=doctor,
@@ -98,6 +119,13 @@ def dashboard():
             'active_alerts': total_active_alerts
         },
         patient_rows=patient_rows,
+        featured_patient=featured_patient,
+        pressure_zones=ft_p_zones,
+        temp_left=ft_tl,
+        temp_right=ft_tr,
+        temp_diff=round(abs(ft_tl - ft_tr), 1),
+        gait=ft_gait,
+        risk_data=ft_risk_data,
         demo_mode=Config.DEMO_MODE
     )
 
@@ -163,6 +191,63 @@ def acknowledge_alert(alert_id):
         'alert_id': alert.id,
         'status': 'ACKNOWLEDGED',
         'message': f'Alert "{alert.title}" acknowledged by Dr. {doctor.user.name}.'
+    })
+
+@doctor_bp.route('/doctor/api/create-alert', methods=['POST'])
+@login_required
+@doctor_required
+def create_alert():
+    doctor = current_user.doctor_profile
+    data = request.get_json() or {}
+
+    patient_id = data.get('patient_id')
+    alert_type = data.get('type', 'CLINICAL_DIRECTIVE')
+    title = data.get('title')
+    description = data.get('description')
+    severity = (data.get('severity') or 'HIGH').upper()
+    region = data.get('region') or 'Bilateral Insole'
+
+    if not patient_id or not title or not description:
+        return jsonify({'success': False, 'message': 'Please provide a patient, alert title, and clinical description.'}), 400
+
+    patient = Patient.query.get(patient_id)
+    if not patient or patient.assigned_doctor_id != doctor.id:
+        return jsonify({'success': False, 'message': 'Unauthorized or patient not assigned to you.'}), 403
+
+    new_alert = Alert(
+        patient_id=patient.id,
+        type=alert_type,
+        title=title,
+        description=description,
+        severity=severity,
+        region=region,
+        status='ACTIVE'
+    )
+    db.session.add(new_alert)
+    db.session.commit()
+
+    # Broadcast real-time update if socketio is initialized
+    try:
+        from extensions import socketio
+        socketio.emit('telemetry_update', {
+            'patient_id': patient.id,
+            'alert_triggered': True,
+            'alert_title': new_alert.title
+        }, room=f"patient_{patient.id}")
+    except Exception as e:
+        print(f"[Create Alert] Socket emit error: {e}")
+
+    return jsonify({
+        'success': True,
+        'message': f'Clinical Alert successfully dispatched to {patient.user.name}.',
+        'alert': {
+            'id': new_alert.id,
+            'patient_id': new_alert.patient_id,
+            'title': new_alert.title,
+            'severity': new_alert.severity,
+            'status': new_alert.status,
+            'created_at': new_alert.created_at.strftime('%H:%M:%S')
+        }
     })
 
 @doctor_bp.route('/doctor/api/sim-toggle/<int:patient_id>', methods=['POST'])

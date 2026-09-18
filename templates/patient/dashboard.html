@@ -83,132 +83,211 @@
   <!-- Dashboard Grid: Foot Pressure Map + Risk Engine Centerpiece -->
   <div class="dashboard-grid-2col">
     
-    <!-- Anatomical 12-Zone Bilateral Foot Pressure SVG Map -->
-    <div class="card-box">
+    <!-- 8-Zone Bilateral Insole Pressure Map -->
+    <div class="card-box insole-map-card">
       <div class="card-title-group">
         <h2 class="card-title">
           <i data-lucide="footprints" style="color: var(--primary-cyan);"></i> Live Bilateral Plantar Pressure Map
         </h2>
-        <span style="font-size: 0.75rem; color: var(--text-muted);">12-Zone FSR Array</span>
+        <span style="font-size: 0.72rem; color: var(--primary-cyan); background: rgba(6,182,212,0.1); border: 1px solid var(--border-glow); padding: 0.2rem 0.65rem; border-radius: 999px; font-weight: 700;">8-Zone FSR Array</span>
       </div>
 
-      <div class="foot-map-container">
-        <div class="feet-svg-wrapper">
-          
-          <!-- LEFT FOOT SVG OUTLINE / AMPUTATION NOTICE -->
+      <!-- Insole Pair Wrapper: Left | Right | Scale Bar -->
+      <div class="insole-map-wrapper">
+
+        <!-- ── LEFT INSOLE COLUMN ── -->
+        <div class="insole-col">
+          <div class="insole-header-row">
+            <span class="insole-side-label">LEFT INSOLE</span>
+            {% if patient.amputated_foot == 'LEFT' %}
+            <span class="insole-temp-badge amputated">AMPUTATED</span>
+            {% else %}
+            <span class="insole-temp-badge left-temp" id="temp-badge-left">{{ temp_left }}°C</span>
+            {% endif %}
+          </div>
+
           {% if patient.amputated_foot == 'LEFT' %}
-          <div style="text-align: center; flex: 1; padding: 2rem 1rem; background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.3); border-radius: var(--radius-md); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 280px;">
-            <i data-lucide="shield-alert" style="width: 36px; height: 36px; color: var(--risk-mod); margin-bottom: 0.75rem;"></i>
-            <div style="font-weight: 700; color: #fff; font-size: 0.9rem; margin-bottom: 0.3rem;">LEFT LIMB AMPUTATED</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted); max-width: 180px;">Unilateral Right Foot Smart Insole Telemetry Active</div>
+          <div class="insole-amputated-box">
+            <i data-lucide="shield-alert" style="width:34px;height:34px;color:var(--risk-mod);"></i>
+            <div style="font-weight:700;color:#fff;font-size:0.9rem;">LEFT LIMB AMPUTATED</div>
+            <div style="font-size:0.74rem;color:var(--text-muted);max-width:170px;">Unilateral Right Foot Smart Insole Telemetry Active</div>
           </div>
           {% else %}
-          <div style="text-align: center; flex: 1;">
-            <svg viewBox="0 0 200 400" width="100%" height="280">
+          <div class="insole-svg-wrap">
+            <svg viewBox="0 0 210 520" class="insole-svg" id="insole-svg-left">
               <defs>
-                <filter id="glow-filter" x="-50%" y="-50%" width="200%" height="200%">
-                  <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+                <radialGradient id="rgL" cx="50%" cy="30%" r="65%">
+                  <stop offset="0%" stop-color="#0284c7" stop-opacity="0.9"/>
+                  <stop offset="60%" stop-color="#0369a1" stop-opacity="0.95"/>
+                  <stop offset="100%" stop-color="#073b5e" stop-opacity="1"/>
+                </radialGradient>
+                <filter id="glowL" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="4" result="blur"/>
                   <feMerge>
-                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="blur"/>
                     <feMergeNode in="SourceGraphic"/>
                   </feMerge>
                 </filter>
               </defs>
-              
-              <!-- Left Foot Anatomical Sole Outline -->
-              <path d="M 90 20 C 130 20, 140 60, 135 110 C 130 150, 120 180, 115 220 C 110 260, 120 320, 110 360 C 100 395, 40 395, 35 360 C 30 320, 45 260, 45 220 C 45 180, 30 150, 35 110 C 40 60, 50 20, 90 20 Z" 
-                    fill="none" stroke="rgba(255, 255, 255, 0.2)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-              
-              <!-- 6 Left Foot Sensor Glow Circles & Nodes -->
-              <!-- 1. Hallux (Big Toe) -->
-              <circle id="sensor-glow-L_hallux" cx="90" cy="45" r="22" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
-              <circle id="sensor-node-L_hallux" cx="90" cy="45" r="10" fill="#0066ff"/>
-              <text id="sensor-val-L_hallux" x="90" y="49" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">24k</text>
-              <text x="90" y="30" font-size="8" fill="var(--text-muted)" text-anchor="middle">Hallux</text>
 
-              <!-- 2. 1st Metatarsal Head (Medial Forefoot) -->
-              <circle id="sensor-glow-L_met1" cx="75" cy="115" r="22" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
-              <circle id="sensor-node-L_met1" cx="75" cy="115" r="10" fill="#0066ff"/>
-              <text id="sensor-val-L_met1" x="75" y="119" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">28k</text>
+              <!-- Outer Glowing Solid Contour Line -->
+              <path d="M 125 18 C 175 18 200 48 198 95 C 196 130 178 158 174 192 C 168 245 146 295 140 345 C 134 395 138 438 136 462 C 132 498 92 506 66 504 C 40 502 26 476 26 444 C 26 400 42 350 42 298 C 42 238 20 162 20 102 C 20 50 68 18 125 18 Z"
+                    fill="url(#rgL)" stroke="#1a8ecb" stroke-width="2.5" filter="url(#glowL)"/>
 
-              <!-- 3. 5th Metatarsal Head (Lateral Forefoot) -->
-              <circle id="sensor-glow-L_met5" cx="115" cy="125" r="22" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
-              <circle id="sensor-node-L_met5" cx="115" cy="125" r="10" fill="#0066ff"/>
-              <text id="sensor-val-L_met5" x="115" y="129" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">26k</text>
+              <!-- Inner Dashed Outline Contour -->
+              <path d="M 123 25 C 168 25 190 52 188 95 C 186 127 170 154 166 188 C 160 240 139 288 133 338 C 127 388 131 430 129 454 C 125 486 90 496 68 494 C 46 492 34 468 34 438 C 34 396 49 346 49 296 C 49 240 28 168 28 105 C 28 56 71 25 123 25 Z"
+                    fill="none" stroke="#00e5ff" stroke-width="1.8" stroke-dasharray="6,4" opacity="0.85"/>
 
-              <!-- 4. Medial Midfoot / Arch -->
-              <circle id="sensor-glow-L_med_mid" cx="65" cy="210" r="20" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
-              <circle id="sensor-node-L_med_mid" cx="65" cy="210" r="9" fill="#0066ff"/>
-              <text id="sensor-val-L_med_mid" x="65" y="213" font-size="8" font-weight="800" fill="#fff" text-anchor="middle">17k</text>
+              <!-- PCB Circuit Trace Lines -->
+              <!-- 3 Parallel Traces from L3 down -->
+              <line x1="128" y1="119" x2="128" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+              <line x1="134" y1="119" x2="134" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+              <line x1="140" y1="119" x2="140" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+              <!-- L4 Trace -->
+              <path d="M 54 162 L 54 260 L 68 290 L 68 415" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+              <!-- T1 Trace -->
+              <path d="M 85 101 L 85 248" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+              <!-- L2 Trace -->
+              <path d="M 95 302 L 95 415" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+              <!-- T2 Trace -->
+              <path d="M 138 339 L 138 415" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
 
-              <!-- 5. Lateral Midfoot -->
-              <circle id="sensor-glow-L_lat_mid" cx="105" cy="220" r="20" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
-              <circle id="sensor-node-L_lat_mid" cx="105" cy="220" r="9" fill="#0066ff"/>
-              <text id="sensor-val-L_lat_mid" x="105" y="223" font-size="8" font-weight="800" fill="#fff" text-anchor="middle">19k</text>
+              <!-- L3 → L_toe | Square FSR – Medial Forefoot / Big Toe -->
+              <rect id="sensor-node-L_toe" x="100" y="65" width="68" height="54" rx="8" ry="8" fill="#27a869" stroke="#ffffff" stroke-width="1.2"/>
+              <text x="134" y="87" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">L3</text>
+              <text id="sensor-val-L_toe" x="134" y="106" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">58k</text>
 
-              <!-- 6. Left Heel -->
-              <circle id="sensor-glow-L_heel" cx="72" cy="340" r="24" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
-              <circle id="sensor-node-L_heel" cx="72" cy="340" r="12" fill="#0066ff"/>
-              <text id="sensor-val-L_heel" x="72" y="344" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">34k</text>
-              <text x="72" y="365" font-size="8" fill="var(--text-muted)" text-anchor="middle">Heel</text>
+              <!-- L4 → L_met | Circular FSR – Lateral Forefoot -->
+              <circle id="sensor-node-L_met" cx="54" cy="135" r="27" fill="#27a869" stroke="#ffffff" stroke-width="1.2"/>
+              <text x="54" y="131" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">L4</text>
+              <text id="sensor-val-L_met" x="54" y="149" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">49k</text>
+
+              <!-- T1 Thermistor Badge -->
+              <circle cx="85" cy="90" r="11" fill="#091b2e" stroke="#00e5ff" stroke-width="1.5"/>
+              <text x="85" y="93.5" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle">T1</text>
+
+              <!-- L2 → L_arch | Circular FSR – Arch / Midfoot -->
+              <circle id="sensor-node-L_arch" cx="95" cy="275" r="27" fill="#279ca8" stroke="#ffffff" stroke-width="1.2"/>
+              <text x="95" y="271" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">L2</text>
+              <text id="sensor-val-L_arch" x="95" y="289" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">28k</text>
+
+              <!-- T2 Thermistor Badge -->
+              <circle cx="138" cy="328" r="11" fill="#091b2e" stroke="#00e5ff" stroke-width="1.5"/>
+              <text x="138" y="331.5" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle">T2</text>
+
+              <!-- L1 → L_heel | Square FSR – Heel -->
+              <rect id="sensor-node-L_heel" x="62" y="415" width="68" height="54" rx="8" ry="8" fill="#279ca8" stroke="#ffffff" stroke-width="1.2"/>
+              <text x="96" y="437" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">L1</text>
+              <text id="sensor-val-L_heel" x="96" y="456" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">42k</text>
             </svg>
-            <div class="foot-label">LEFT FOOT</div>
           </div>
           {% endif %}
+        </div>
 
-
-          <!-- RIGHT FOOT SVG OUTLINE & 6 SENSORS -->
-          <div style="text-align: center; flex: 1;">
-            <svg viewBox="0 0 200 400" width="100%" height="280">
-              <!-- Right Foot Anatomical Sole Outline -->
-              <path d="M 110 20 C 70 20, 60 60, 65 110 C 70 150, 80 180, 85 220 C 90 260, 80 320, 90 360 C 100 395, 160 395, 165 360 C 170 320, 155 260, 155 220 C 155 180, 170 150, 165 110 C 160 60, 150 20, 110 20 Z" 
-                    fill="none" stroke="rgba(255, 255, 255, 0.2)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-              
-              <!-- 6 Right Foot Sensor Glow Circles & Nodes -->
-              <!-- 1. Hallux (Big Toe) -->
-              <circle id="sensor-glow-R_hallux" cx="110" cy="45" r="22" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
-              <circle id="sensor-node-R_hallux" cx="110" cy="45" r="10" fill="#0066ff"/>
-              <text id="sensor-val-R_hallux" x="110" y="49" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">26k</text>
-              <text x="110" y="30" font-size="8" fill="var(--text-muted)" text-anchor="middle">Hallux</text>
-
-              <!-- 2. 1st Metatarsal Head (Medial Forefoot) -->
-              <circle id="sensor-glow-R_met1" cx="125" cy="115" r="22" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
-              <circle id="sensor-node-R_met1" cx="125" cy="115" r="10" fill="#0066ff"/>
-              <text id="sensor-val-R_met1" x="125" y="119" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">32k</text>
-
-              <!-- 3. 5th Metatarsal Head (Lateral Forefoot) -->
-              <circle id="sensor-glow-R_met5" cx="85" cy="125" r="22" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
-              <circle id="sensor-node-R_met5" cx="85" cy="125" r="10" fill="#0066ff"/>
-              <text id="sensor-val-R_met5" x="85" y="129" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">30k</text>
-
-              <!-- 4. Medial Midfoot / Arch -->
-              <circle id="sensor-glow-R_med_mid" cx="135" cy="210" r="20" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
-              <circle id="sensor-node-R_med_mid" cx="135" cy="210" r="9" fill="#0066ff"/>
-              <text id="sensor-val-R_med_mid" x="135" y="213" font-size="8" font-weight="800" fill="#fff" text-anchor="middle">19k</text>
-
-              <!-- 5. Lateral Midfoot -->
-              <circle id="sensor-glow-R_lat_mid" cx="95" cy="220" r="20" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
-              <circle id="sensor-node-R_lat_mid" cx="95" cy="220" r="9" fill="#0066ff"/>
-              <text id="sensor-val-R_lat_mid" x="95" y="223" font-size="8" font-weight="800" fill="#fff" text-anchor="middle">21k</text>
-
-              <!-- 6. Right Heel -->
-              <circle id="sensor-glow-R_heel" cx="128" cy="340" r="24" fill="rgba(0, 102, 255, 0.4)" filter="url(#glow-filter)"/>
-              <circle id="sensor-node-R_heel" cx="128" cy="340" r="12" fill="#0066ff"/>
-              <text id="sensor-val-R_heel" x="128" y="344" font-size="9" font-weight="800" fill="#fff" text-anchor="middle">36k</text>
-              <text x="128" y="365" font-size="8" fill="var(--text-muted)" text-anchor="middle">Heel</text>
-            </svg>
-            <div class="foot-label">RIGHT FOOT</div>
+        <!-- ── RIGHT INSOLE COLUMN ── -->
+        <div class="insole-col">
+          <div class="insole-header-row">
+            <span class="insole-side-label">RIGHT INSOLE</span>
+            <span class="insole-temp-badge right-temp" id="temp-badge-right">{{ temp_right }}°C</span>
           </div>
 
+          <div class="insole-svg-wrap">
+            <svg viewBox="0 0 210 520" class="insole-svg" id="insole-svg-right">
+              <defs>
+                <radialGradient id="rgR" cx="50%" cy="30%" r="65%">
+                  <stop offset="0%" stop-color="#0284c7" stop-opacity="0.9"/>
+                  <stop offset="60%" stop-color="#0369a1" stop-opacity="0.95"/>
+                  <stop offset="100%" stop-color="#073b5e" stop-opacity="1"/>
+                </radialGradient>
+                <filter id="glowR" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="4" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <!-- Outer Glowing Solid Contour Line -->
+              <path d="M 85 18 C 35 18 10 48 12 95 C 14 130 32 158 36 192 C 42 245 64 295 70 345 C 76 395 72 438 74 462 C 78 498 118 506 144 504 C 170 502 184 476 184 444 C 184 400 168 350 168 298 C 168 238 190 162 190 102 C 190 50 142 18 85 18 Z"
+                    fill="url(#rgR)" stroke="#1a8ecb" stroke-width="2.5" filter="url(#glowR)"/>
+
+              <!-- Inner Dashed Outline Contour -->
+              <path d="M 87 25 C 42 25 20 52 22 95 C 24 127 40 154 44 188 C 50 240 71 288 77 338 C 83 388 79 430 81 454 C 85 486 120 496 142 494 C 164 492 176 468 176 438 C 176 396 161 346 161 296 C 161 240 182 168 182 105 C 182 56 139 25 87 25 Z"
+                    fill="none" stroke="#00e5ff" stroke-width="1.8" stroke-dasharray="6,4" opacity="0.85"/>
+
+              <!-- PCB Circuit Trace Lines -->
+              <!-- 3 Parallel Traces from R3 down -->
+              <line x1="70" y1="119" x2="70" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+              <line x1="76" y1="119" x2="76" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+              <line x1="82" y1="119" x2="82" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+              <!-- R4 Trace -->
+              <path d="M 156 162 L 156 260 L 142 290 L 142 415" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+              <!-- T1 Trace -->
+              <path d="M 125 101 L 125 248" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+              <!-- R2 Trace -->
+              <path d="M 115 302 L 115 415" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+              <!-- T2 Trace -->
+              <path d="M 72 339 L 72 415" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+
+              <!-- R3 → R_toe | Square FSR – Medial Forefoot / Big Toe -->
+              <rect id="sensor-node-R_toe" x="42" y="65" width="68" height="54" rx="8" ry="8" fill="#27a869" stroke="#ffffff" stroke-width="1.2"/>
+              <text x="76" y="87" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">R3</text>
+              <text id="sensor-val-R_toe" x="76" y="106" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">59k</text>
+
+              <!-- R4 → R_met | Circular FSR – Lateral Forefoot -->
+              <circle id="sensor-node-R_met" cx="156" cy="135" r="27" fill="#27a869" stroke="#ffffff" stroke-width="1.2"/>
+              <text x="156" y="131" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">R4</text>
+              <text id="sensor-val-R_met" x="156" y="149" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">49k</text>
+
+              <!-- T1 Thermistor Badge -->
+              <circle cx="125" cy="90" r="11" fill="#091b2e" stroke="#00e5ff" stroke-width="1.5"/>
+              <text x="125" y="93.5" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle">T1</text>
+
+              <!-- R2 → R_arch | Circular FSR – Arch / Midfoot -->
+              <circle id="sensor-node-R_arch" cx="115" cy="275" r="27" fill="#279ca8" stroke="#ffffff" stroke-width="1.2"/>
+              <text x="115" y="271" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">R2</text>
+              <text id="sensor-val-R_arch" x="115" y="289" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">29k</text>
+
+              <!-- T2 Thermistor Badge -->
+              <circle cx="72" cy="328" r="11" fill="#091b2e" stroke="#00e5ff" stroke-width="1.5"/>
+              <text x="72" y="331.5" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle">T2</text>
+
+              <!-- R1 → R_heel | Square FSR – Heel -->
+              <rect id="sensor-node-R_heel" x="80" y="415" width="68" height="54" rx="8" ry="8" fill="#279ca8" stroke="#ffffff" stroke-width="1.2"/>
+              <text x="114" y="437" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">R1</text>
+              <text id="sensor-val-R_heel" x="114" y="456" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">43k</text>
+            </svg>
+          </div>
         </div>
 
-        <div class="heatmap-legend">
-          <span>0 kPa</span>
-          <div class="legend-bar"></div>
-          <span>100+ kPa</span>
+        <!-- ── Pressure Color Scale Bar ── -->
+        <div class="insole-scale-bar">
+          <span class="scale-end-label scale-high">High</span>
+          <div class="scale-gradient-bar"></div>
+          <span class="scale-end-label scale-low">Low</span>
+          <div class="scale-range-text">0 – 100<br>kPa</div>
+        </div>
+
+      </div><!-- /insole-map-wrapper -->
+
+      <!-- Sensor Type Legend -->
+      <div class="insole-sensor-legend">
+        <div class="legend-sensor-item">
+          <div class="legend-radio-box"><div class="legend-icon-sq"></div></div>
+          <span>Square FSR (Forefoot / Heel)</span>
+        </div>
+        <div class="legend-sensor-item">
+          <div class="legend-radio-box"><div class="legend-icon-ci"></div></div>
+          <span>Circular FSR (Lat. Forefoot / Arch)</span>
+        </div>
+        <div class="legend-sensor-item">
+          <div class="legend-icon-th"></div>
+          <span>Thermistor (T1, T2)</span>
         </div>
       </div>
-    </div>
+
+    </div><!-- /insole-map-card -->
 
     <!-- Visual Centerpiece: Risk Prediction Engine Gauge & Breakdown -->
     <div class="card-box risk-centerpiece">

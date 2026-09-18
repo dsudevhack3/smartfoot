@@ -18,7 +18,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <!-- App Custom Styles -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=2026091804">
   {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -78,10 +78,10 @@
   {% block content %}{% endblock %}
 
   <!-- App Core JS Assets -->
-  <script src="{{ url_for('static', filename='js/socket_client.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/foot_map.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/risk_gauge.js') }}"></script>
-  <script src="{{ url_for('static', filename='js/trends_charts.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/socket_client.js') }}?v=2026091804"></script>
+  <script src="{{ url_for('static', filename='js/foot_map.js') }}?v=2026091804"></script>
+  <script src="{{ url_for('static', filename='js/risk_gauge.js') }}?v=2026091804"></script>
+  <script src="{{ url_for('static', filename='js/trends_charts.js') }}?v=2026091804"></script>
 
   <script>
     // Initialize Lucide icons

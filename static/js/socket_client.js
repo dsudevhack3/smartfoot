@@ -95,6 +95,12 @@ class SmartfootSocketClient {
     if (tempRightEl) tempRightEl.textContent = `${data.temperature_right}°C`;
     if (tempDiffEl) tempDiffEl.textContent = `Δ ${data.temp_diff}°C`;
 
+    // Update insole temperature badges on the foot map card
+    const tbLeft  = document.getElementById('temp-badge-left');
+    const tbRight = document.getElementById('temp-badge-right');
+    if (tbLeft)  tbLeft.textContent  = `${data.temperature_left}°C`;
+    if (tbRight) tbRight.textContent = `${data.temperature_right}°C`;
+
     if (peakPressureEl && data.pressure_zones) {
       const maxP = Math.max(...Object.values(data.pressure_zones));
       peakPressureEl.textContent = `${maxP.toFixed(1)} kPa`;

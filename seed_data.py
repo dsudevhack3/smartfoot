@@ -44,7 +44,7 @@ def seed_database():
     db.session.flush()
 
     sita_baseline_p = {
-        'R_heel': 36.0, 'R_lat_mid': 21.0, 'R_med_mid': 19.0, 'R_met1': 32.0, 'R_met5': 30.0, 'R_hallux': 26.0
+        'R_toe': 26.0, 'R_met': 32.0, 'R_arch': 20.0, 'R_heel': 36.0
     }
     patient_sita = Patient(
         user_id=p1_user.id,
@@ -80,8 +80,8 @@ def seed_database():
     db.session.flush()
 
     rajesh_baseline_p = {
-        'L_heel': 38.0, 'L_lat_mid': 22.0, 'L_med_mid': 20.0, 'L_met1': 32.0, 'L_met5': 29.0, 'L_hallux': 26.0,
-        'R_heel': 40.0, 'R_lat_mid': 23.0, 'R_med_mid': 21.0, 'R_met1': 34.0, 'R_met5': 30.0, 'R_hallux': 27.0
+        'L_toe': 26.0, 'L_met': 30.0, 'L_arch': 21.0, 'L_heel': 38.0,
+        'R_toe': 27.0, 'R_met': 32.0, 'R_arch': 22.0, 'R_heel': 40.0
     }
     patient_rajesh = Patient(
         user_id=p2_user.id,
@@ -116,8 +116,8 @@ def seed_database():
     db.session.flush()
 
     anita_baseline_p = {
-        'L_heel': 32.0, 'L_lat_mid': 18.0, 'L_med_mid': 16.0, 'L_met1': 27.0, 'L_met5': 25.0, 'L_hallux': 22.0,
-        'R_heel': 33.0, 'R_lat_mid': 18.0, 'R_med_mid': 16.0, 'R_met1': 27.0, 'R_met5': 25.0, 'R_hallux': 23.0
+        'L_toe': 22.0, 'L_met': 27.0, 'L_arch': 17.0, 'L_heel': 32.0,
+        'R_toe': 23.0, 'R_met': 27.0, 'R_arch': 17.0, 'R_heel': 33.0
     }
     patient_anita = Patient(
         user_id=p3_user.id,
@@ -143,42 +143,35 @@ def seed_database():
 
     db.session.commit()
 
-    # 5. Generate Historical Telemetry Records (Past 7 Days, Distinct Timestamps, Natural Variations)
+    # 5. Generate Historical Telemetry Records (Past 7 Days, 8-Zone Array)
     print("Generating distinct historical telemetry series...")
     now = datetime.now(timezone.utc)
 
     patients_configs = [
-        (patient_sita, 82.5, 31.8, 34.4, 18.5, "Sita High Risk"),      # Sita: High temp diff ~2.6°C, high R_met1 pressure (~82 kPa)
+        (patient_sita, 82.5, 31.8, 34.4, 18.5, "Sita High Risk"),      # Sita: High temp diff ~2.6°C, high R_met pressure (~82 kPa)
         (patient_rajesh, 48.0, 32.4, 33.6, 9.5, "Rajesh Med Risk"),    # Rajesh: Med temp diff ~1.2°C, moderate R_heel pressure (~58 kPa)
         (patient_anita, 16.5, 32.1, 32.4, 3.2, "Anita Low Risk")        # Anita: Minimal temp diff ~0.3°C, normal pressures (~30-36 kPa)
     ]
 
     for patient, target_risk, base_tl, base_tr, base_asym, label in patients_configs:
-        # Create 14 history points spaced 12 hours apart over past 7 days
         for i in range(14, -1, -1):
             ts = now - timedelta(hours=i * 12)
-            # Add small natural fluctuation
             fluct = (i % 5 - 2) * 0.4
             tl = round(base_tl + fluct * 0.2, 1)
             tr = round(base_tr + fluct * 0.3, 1)
             asym = round(max(1.0, base_asym + fluct * 0.5), 1)
 
-            # Pressure values
             p_map = dict(patient.baseline_pressure)
             if "Sita" in label:
-                # Spike on Right 1st Metatarsal
-                p_map['R_met1'] = round(78.0 + (14 - i) * 0.5 + (i % 3) * 1.5, 1)
-                p_map['R_hallux'] = round(52.0 + (i % 2) * 2.0, 1)
+                p_map['R_met'] = round(78.0 + (14 - i) * 0.5 + (i % 3) * 1.5, 1)
+                p_map['R_toe'] = round(52.0 + (i % 2) * 2.0, 1)
             elif "Rajesh" in label:
-                # Moderate elevation on Right Heel
                 p_map['R_heel'] = round(54.0 + (i % 4) * 1.2, 1)
             else:
-                # Normal variation around baseline
                 for k in p_map:
                     p_map[k] = round(p_map[k] + (i % 3 - 1) * 0.8, 1)
 
             g_data = {'cadence': 102 + (i % 4), 'asymmetry': asym, 'impact_g': round(1.2 + asym * 0.02, 2)}
-
             risk_res = RiskEngine.calculate(patient, p_map, tl, tr, g_data)
 
             tele = Telemetry(
@@ -187,13 +180,14 @@ def seed_database():
                 pressure_zones=p_map,
                 temperature_left=tl,
                 temperature_right=tr,
+                blood_glucose=114.0 if "Anita" in label else (142.0 if "Rajesh" in label else 168.0),
+                daily_steps=4820 + (i * 150),
                 gait_data=g_data,
                 risk_score=risk_res['score'],
                 is_simulated=True
             )
             db.session.add(tele)
 
-            # Generate initial active alert for High and Moderate risk patients
             if i == 0:
                 AlertEngine.process_telemetry(patient.id, p_map, tl, tr, g_data, risk_res)
 

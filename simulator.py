@@ -51,12 +51,12 @@ class PatientSimulator(threading.Thread):
                     base_p = dict(patient.baseline_pressure)
                     
                     if self.scenario == "HIGH_RISK" or (self.scenario == "DEFAULT" and patient.patient_code == "PT-8021"):
-                        # High risk profile (Sita Devi): Right Forefoot (R_met1) focal pressure spike & 2.6°C temp diff
+                        # High risk profile (Sita Devi): Right Forefoot (R_met) focal pressure spike & 2.6°C temp diff
                         temp_l = round(31.8 + sine_wave * 0.2 + noise * 0.1, 1)
                         temp_r = round(34.5 + sine_wave * 0.3 + noise * 0.1, 1)
                         asym = round(18.0 + sine_wave * 1.5 + noise, 1)
-                        base_p['R_met1'] = round(82.0 + sine_wave * 4.0 + noise * 2.0, 1)
-                        base_p['R_hallux'] = round(55.0 + sine_wave * 2.0, 1)
+                        base_p['R_met'] = round(82.0 + sine_wave * 4.0 + noise * 2.0, 1)
+                        base_p['R_toe'] = round(55.0 + sine_wave * 2.0, 1)
                     
                     elif self.scenario == "MODERATE" or (self.scenario == "DEFAULT" and patient.patient_code == "PT-5044"):
                         # Moderate risk profile (Rajesh Kumar): Right heel pressure elevation & 1.2°C temp diff

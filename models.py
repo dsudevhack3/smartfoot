@@ -90,10 +90,10 @@ class Patient(db.Model):
                 return json.loads(self.baseline_pressure_json)
             except Exception:
                 pass
-        # Default baseline across 12 zones (6 left, 6 right) in kPa
+        # Default baseline across 8 zones (4 left, 4 right) in kPa
         return {
-            'L_heel': 35.0, 'L_lat_mid': 20.0, 'L_med_mid': 18.0, 'L_met1': 30.0, 'L_met5': 28.0, 'L_hallux': 25.0,
-            'R_heel': 35.0, 'R_lat_mid': 20.0, 'R_med_mid': 18.0, 'R_met1': 30.0, 'R_met5': 28.0, 'R_hallux': 25.0
+            'L_toe': 25.0, 'L_met': 30.0, 'L_arch': 18.0, 'L_heel': 35.0,
+            'R_toe': 25.0, 'R_met': 30.0, 'R_arch': 18.0, 'R_heel': 35.0
         }
 
     @baseline_pressure.setter
@@ -133,12 +133,16 @@ class Telemetry(db.Model):
     patient_id = db.Column(db.Integer, db.ForeignKey('patients.id'), nullable=False, index=True)
     timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), index=True)
     
-    # 12 bilateral zones pressure values in kPa (JSON)
+    # 8 bilateral zones pressure values in kPa (JSON)
     pressure_zones_json = db.Column(db.Text, nullable=False)
     
     # Temperatures (°C)
     temperature_left = db.Column(db.Float, nullable=False)
     temperature_right = db.Column(db.Float, nullable=False)
+    
+    # CGM Blood Glucose (mg/dL) & Steps
+    blood_glucose = db.Column(db.Float, default=114.0)
+    daily_steps = db.Column(db.Integer, default=4820)
     
     # IMU / Gait metrics (JSON: cadence, asymmetry, impact)
     gait_data_json = db.Column(db.Text, nullable=False)
@@ -146,13 +150,15 @@ class Telemetry(db.Model):
     risk_score = db.Column(db.Float, nullable=False, default=0.0)
     is_simulated = db.Column(db.Boolean, default=True)
 
-    def __init__(self, patient_id=None, timestamp=None, pressure_zones=None, temperature_left=32.0, temperature_right=32.0, gait_data=None, risk_score=0.0, is_simulated=True, **kwargs):
+    def __init__(self, patient_id=None, timestamp=None, pressure_zones=None, temperature_left=32.0, temperature_right=32.0, blood_glucose=114.0, daily_steps=4820, gait_data=None, risk_score=0.0, is_simulated=True, **kwargs):
         super().__init__(**kwargs)
         if patient_id is not None: self.patient_id = patient_id
         if timestamp is not None: self.timestamp = timestamp
         if pressure_zones is not None: self.pressure_zones = pressure_zones
         if temperature_left is not None: self.temperature_left = temperature_left
         if temperature_right is not None: self.temperature_right = temperature_right
+        if blood_glucose is not None: self.blood_glucose = blood_glucose
+        if daily_steps is not None: self.daily_steps = daily_steps
         if gait_data is not None: self.gait_data = gait_data
         if risk_score is not None: self.risk_score = risk_score
         if is_simulated is not None: self.is_simulated = is_simulated

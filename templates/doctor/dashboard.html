@@ -51,10 +51,13 @@
         </p>
       </div>
 
-      <div style="display: flex; gap: 0.5rem;">
+      <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
         <span style="background: rgba(16, 185, 129, 0.15); color: var(--risk-low); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.4rem 0.85rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700;">
           {{ stats.total_patients }} Active Insole Feeds
         </span>
+        <button type="button" class="btn-primary" onclick="openCreateAlertModal()" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 1rem; font-size: 0.82rem; font-weight: 700; box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); background: linear-gradient(135deg, #ef4444, #dc2626); border-color: #f87171;">
+          <i data-lucide="bell-plus" style="width: 16px; height: 16px;"></i> Dispatch Clinical Alert
+        </button>
       </div>
     </div>
 
@@ -93,6 +96,265 @@
         <div class="stat-footer">Unacknowledged notices</div>
       </div>
 
+    </div>
+
+    <!-- Live Bilateral Plantar Pressure Map Centerpiece (Doctor View) -->
+    <div class="dashboard-grid-2col">
+      <!-- 8-Zone Bilateral Insole Pressure Map -->
+      <div class="card-box insole-map-card">
+        <div class="card-title-group" style="flex-wrap: wrap; gap: 0.5rem;">
+          <h2 class="card-title">
+            <i data-lucide="footprints" style="color: var(--primary-cyan);"></i> Live Bilateral Plantar Pressure Map
+          </h2>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            {% if featured_patient %}
+            <span style="font-size: 0.72rem; color: var(--primary-cyan); background: rgba(6,182,212,0.1); border: 1px solid var(--border-glow); padding: 0.2rem 0.65rem; border-radius: 999px; font-weight: 700;">
+              Patient: {{ featured_patient.user.name }} ({{ featured_patient.patient_code }})
+            </span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Insole Pair Wrapper: Left | Right | Scale Bar -->
+        <div class="insole-map-wrapper">
+
+          <!-- ── LEFT INSOLE COLUMN ── -->
+          <div class="insole-col">
+            <div class="insole-header-row">
+              <span class="insole-side-label">LEFT INSOLE</span>
+              {% if featured_patient and featured_patient.amputated_foot == 'LEFT' %}
+              <span class="insole-temp-badge amputated">AMPUTATED</span>
+              {% else %}
+              <span class="insole-temp-badge left-temp" id="temp-badge-left">{{ temp_left }}°C</span>
+              {% endif %}
+            </div>
+
+            {% if featured_patient and featured_patient.amputated_foot == 'LEFT' %}
+            <div class="insole-amputated-box">
+              <i data-lucide="shield-alert" style="width:34px;height:34px;color:var(--risk-mod);"></i>
+              <div style="font-weight:700;color:#fff;font-size:0.9rem;">LEFT LIMB AMPUTATED</div>
+              <div style="font-size:0.74rem;color:var(--text-muted);max-width:170px;">Unilateral Right Foot Smart Insole Telemetry Active</div>
+            </div>
+            {% else %}
+            <div class="insole-svg-wrap">
+              <svg viewBox="0 0 210 520" class="insole-svg" id="insole-svg-left">
+                <defs>
+                  <radialGradient id="rgL_dash" cx="50%" cy="30%" r="65%">
+                    <stop offset="0%" stop-color="#0284c7" stop-opacity="0.9"/>
+                    <stop offset="60%" stop-color="#0369a1" stop-opacity="0.95"/>
+                    <stop offset="100%" stop-color="#073b5e" stop-opacity="1"/>
+                  </radialGradient>
+                  <filter id="glowL_dash" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="4" result="blur"/>
+                    <feMerge>
+                      <feMergeNode in="blur"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                <!-- Outer Glowing Solid Contour Line -->
+                <path d="M 125 18 C 175 18 200 48 198 95 C 196 130 178 158 174 192 C 168 245 146 295 140 345 C 134 395 138 438 136 462 C 132 498 92 506 66 504 C 40 502 26 476 26 444 C 26 400 42 350 42 298 C 42 238 20 162 20 102 C 20 50 68 18 125 18 Z"
+                      fill="url(#rgL_dash)" stroke="#1a8ecb" stroke-width="2.5" filter="url(#glowL_dash)"/>
+
+                <!-- Inner Dashed Outline Contour -->
+                <path d="M 123 25 C 168 25 190 52 188 95 C 186 127 170 154 166 188 C 160 240 139 288 133 338 C 127 388 131 430 129 454 C 125 486 90 496 68 494 C 46 492 34 468 34 438 C 34 396 49 346 49 296 C 49 240 28 168 28 105 C 28 56 71 25 123 25 Z"
+                      fill="none" stroke="#00e5ff" stroke-width="1.8" stroke-dasharray="6,4" opacity="0.85"/>
+
+                <!-- PCB Circuit Trace Lines -->
+                <line x1="128" y1="119" x2="128" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+                <line x1="134" y1="119" x2="134" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+                <line x1="140" y1="119" x2="140" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+                <path d="M 54 162 L 54 260 L 68 290 L 68 415" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+                <path d="M 85 101 L 85 248" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+                <path d="M 95 302 L 95 415" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+                <path d="M 138 339 L 138 415" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+
+                <!-- L3 → L_toe | Square FSR -->
+                <rect id="sensor-node-L_toe" x="100" y="65" width="68" height="54" rx="8" ry="8" fill="#27a869" stroke="#ffffff" stroke-width="1.2"/>
+                <text x="134" y="87" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">L3</text>
+                <text id="sensor-val-L_toe" x="134" y="106" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">58k</text>
+
+                <!-- L4 → L_met | Circular FSR -->
+                <circle id="sensor-node-L_met" cx="54" cy="135" r="27" fill="#27a869" stroke="#ffffff" stroke-width="1.2"/>
+                <text x="54" y="131" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">L4</text>
+                <text id="sensor-val-L_met" x="54" y="149" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">49k</text>
+
+                <!-- T1 Thermistor Badge -->
+                <circle cx="85" cy="90" r="11" fill="#091b2e" stroke="#00e5ff" stroke-width="1.5"/>
+                <text x="85" y="93.5" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle">T1</text>
+
+                <!-- L2 → L_arch | Circular FSR -->
+                <circle id="sensor-node-L_arch" cx="95" cy="275" r="27" fill="#279ca8" stroke="#ffffff" stroke-width="1.2"/>
+                <text x="95" y="271" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">L2</text>
+                <text id="sensor-val-L_arch" x="95" y="289" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">28k</text>
+
+                <!-- T2 Thermistor Badge -->
+                <circle cx="138" cy="328" r="11" fill="#091b2e" stroke="#00e5ff" stroke-width="1.5"/>
+                <text x="138" y="331.5" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle">T2</text>
+
+                <!-- L1 → L_heel | Square FSR -->
+                <rect id="sensor-node-L_heel" x="62" y="415" width="68" height="54" rx="8" ry="8" fill="#279ca8" stroke="#ffffff" stroke-width="1.2"/>
+                <text x="96" y="437" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">L1</text>
+                <text id="sensor-val-L_heel" x="96" y="456" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">42k</text>
+              </svg>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- ── RIGHT INSOLE COLUMN ── -->
+          <div class="insole-col">
+            <div class="insole-header-row">
+              <span class="insole-side-label">RIGHT INSOLE</span>
+              <span class="insole-temp-badge right-temp" id="temp-badge-right">{{ temp_right }}°C</span>
+            </div>
+
+            <div class="insole-svg-wrap">
+              <svg viewBox="0 0 210 520" class="insole-svg" id="insole-svg-right">
+                <defs>
+                  <radialGradient id="rgR_dash" cx="50%" cy="30%" r="65%">
+                    <stop offset="0%" stop-color="#0284c7" stop-opacity="0.9"/>
+                    <stop offset="60%" stop-color="#0369a1" stop-opacity="0.95"/>
+                    <stop offset="100%" stop-color="#073b5e" stop-opacity="1"/>
+                  </radialGradient>
+                  <filter id="glowR_dash" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="4" result="blur"/>
+                    <feMerge>
+                      <feMergeNode in="blur"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                <!-- Outer Glowing Solid Contour Line -->
+                <path d="M 85 18 C 35 18 10 48 12 95 C 14 130 32 158 36 192 C 42 245 64 295 70 345 C 76 395 72 438 74 462 C 78 498 118 506 144 504 C 170 502 184 476 184 444 C 184 400 168 350 168 298 C 168 238 190 162 190 102 C 190 50 142 18 85 18 Z"
+                      fill="url(#rgR_dash)" stroke="#1a8ecb" stroke-width="2.5" filter="url(#glowR_dash)"/>
+
+                <!-- Inner Dashed Outline Contour -->
+                <path d="M 87 25 C 42 25 20 52 22 95 C 24 127 40 154 44 188 C 50 240 71 288 77 338 C 83 388 79 430 81 454 C 85 486 120 496 142 494 C 164 492 176 468 176 438 C 176 396 161 346 161 296 C 161 240 182 168 182 105 C 182 56 139 25 87 25 Z"
+                      fill="none" stroke="#00e5ff" stroke-width="1.8" stroke-dasharray="6,4" opacity="0.85"/>
+
+                <!-- PCB Circuit Trace Lines -->
+                <line x1="70" y1="119" x2="70" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+                <line x1="76" y1="119" x2="76" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+                <line x1="82" y1="119" x2="82" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+                <path d="M 156 162 L 156 260 L 142 290 L 142 415" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+                <path d="M 125 101 L 125 248" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+                <path d="M 115 302 L 115 415" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+                <path d="M 72 339 L 72 415" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+
+                <!-- R3 → R_toe | Square FSR -->
+                <rect id="sensor-node-R_toe" x="42" y="65" width="68" height="54" rx="8" ry="8" fill="#27a869" stroke="#ffffff" stroke-width="1.2"/>
+                <text x="76" y="87" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">R3</text>
+                <text id="sensor-val-R_toe" x="76" y="106" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">59k</text>
+
+                <!-- R4 → R_met | Circular FSR -->
+                <circle id="sensor-node-R_met" cx="156" cy="135" r="27" fill="#27a869" stroke="#ffffff" stroke-width="1.2"/>
+                <text x="156" y="131" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">R4</text>
+                <text id="sensor-val-R_met" x="156" y="149" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">49k</text>
+
+                <!-- T1 Thermistor Badge -->
+                <circle cx="125" cy="90" r="11" fill="#091b2e" stroke="#00e5ff" stroke-width="1.5"/>
+                <text x="125" y="93.5" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle">T1</text>
+
+                <!-- R2 → R_arch | Circular FSR -->
+                <circle id="sensor-node-R_arch" cx="115" cy="275" r="27" fill="#279ca8" stroke="#ffffff" stroke-width="1.2"/>
+                <text x="115" y="271" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">R2</text>
+                <text id="sensor-val-R_arch" x="115" y="289" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">29k</text>
+
+                <!-- T2 Thermistor Badge -->
+                <circle cx="72" cy="328" r="11" fill="#091b2e" stroke="#00e5ff" stroke-width="1.5"/>
+                <text x="72" y="331.5" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle">T2</text>
+
+                <!-- R1 → R_heel | Square FSR -->
+                <rect id="sensor-node-R_heel" x="80" y="415" width="68" height="54" rx="8" ry="8" fill="#279ca8" stroke="#ffffff" stroke-width="1.2"/>
+                <text x="114" y="437" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">R1</text>
+                <text id="sensor-val-R_heel" x="114" y="456" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">43k</text>
+              </svg>
+            </div>
+          </div>
+
+          <!-- ── Pressure Color Scale Bar ── -->
+          <div class="insole-scale-bar">
+            <span class="scale-end-label scale-high">High</span>
+            <div class="scale-gradient-bar"></div>
+            <span class="scale-end-label scale-low">Low</span>
+            <div class="scale-range-text">0 – 100<br>kPa</div>
+          </div>
+
+        </div><!-- /insole-map-wrapper -->
+
+        <!-- Sensor Type Legend -->
+        <div class="insole-sensor-legend">
+          <div class="legend-sensor-item">
+            <div class="legend-radio-box"><div class="legend-icon-sq"></div></div>
+            <span>Square FSR (Forefoot / Heel)</span>
+          </div>
+          <div class="legend-sensor-item">
+            <div class="legend-radio-box"><div class="legend-icon-ci"></div></div>
+            <span>Circular FSR (Lat. Forefoot / Arch)</span>
+          </div>
+          <div class="legend-sensor-item">
+            <div class="legend-icon-th"></div>
+            <span>Thermistor (T1, T2)</span>
+          </div>
+        </div>
+      </div><!-- /insole-map-card -->
+
+      <!-- Risk Prediction Centerpiece & Factor Breakdown -->
+      <div class="card-box risk-centerpiece">
+        <div class="card-title-group">
+          <h2 class="card-title">
+            <i data-lucide="shield-alert" style="color: var(--primary-cyan);"></i> Ulcer Risk Prediction Engine
+          </h2>
+          <span class="risk-level-badge {{ risk_data.level }}">{{ risk_data.level }}</span>
+        </div>
+
+        <div class="gauge-row">
+          <div class="gauge-circle-container">
+            <svg class="gauge-svg" width="150" height="150" viewBox="0 0 160 160">
+              <circle class="gauge-bg" cx="80" cy="80" r="70" fill="none"/>
+              <circle class="gauge-progress" id="risk-gauge-progress" cx="80" cy="80" r="70" fill="none"/>
+            </svg>
+            <div class="gauge-center-text">
+              <div class="gauge-score" id="risk-gauge-score">{{ risk_data.score|round|int }}</div>
+              <div class="gauge-label">RISK INDEX</div>
+            </div>
+          </div>
+
+          <div style="flex: 1;">
+            <div class="takeaway-box">
+              {{ risk_data.takeaway }}
+            </div>
+          </div>
+        </div>
+
+        <div class="factor-breakdown-list">
+          <div class="factor-card">
+            <div class="factor-header">
+              <span>Plantary Pressure Deviation (40% Weight)</span>
+              <span style="color: var(--primary-cyan);">Active Telemetry</span>
+            </div>
+            <div class="factor-explanation">Monitors peak force on high-risk plantar zones (L3/R3 Forefoot, L1/R1 Heel).</div>
+          </div>
+
+          <div class="factor-card">
+            <div class="factor-header">
+              <span>Temperature Asymmetry (30% Weight)</span>
+              <span style="color: var(--risk-mod);">Δ {{ temp_diff }}°C</span>
+            </div>
+            <div class="factor-explanation">Detects early pre-ulcerative thermal inflammation (>1.5°C threshold).</div>
+          </div>
+
+          <div class="factor-card">
+            <div class="factor-header">
+              <span>Gait Symmetry (30% Weight)</span>
+              <span style="color: var(--risk-low);">{{ gait.asymmetry|round(1) }}% Asymmetry</span>
+            </div>
+            <div class="factor-explanation">Evaluates stance phase symmetry and impact force per step.</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Patient Monitoring Registry Table -->
@@ -192,7 +454,7 @@
     </div>
 
     {% if demo_mode %}
-    <!-- Floating Demo Simulator Controls (Gated strictly behind DEMO_MODE) -->
+    <!-- Floating Demo Simulator Controls -->
     <div class="card-box" style="background: rgba(6, 182, 212, 0.05); border-color: var(--border-glow);">
       <div class="card-title-group">
         <h2 class="card-title">
@@ -221,6 +483,75 @@
 
   </main>
 </div>
+
+<!-- Glassmorphic Modal: Dispatch Clinical Alert -->
+<div class="modal-overlay" id="create-alert-modal" style="display: none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 0.5rem;">
+        <i data-lucide="bell-plus" style="color: var(--risk-high);"></i> Dispatch Clinical Alert
+      </h3>
+      <button type="button" class="btn-close-modal" onclick="closeCreateAlertModal()">&times;</button>
+    </div>
+
+    <form id="create-alert-form" onsubmit="submitNewAlert(event)">
+      <div class="modal-body" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+        
+        <div>
+          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Target Patient</label>
+          <select id="modal-patient-id" class="form-input" style="width: 100%;" required>
+            {% for row in patient_rows %}
+            <option value="{{ row.patient.id }}">{{ row.user.name }} ({{ row.patient.patient_code }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div>
+            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Severity Level</label>
+            <select id="modal-alert-severity" class="form-input" style="width: 100%;">
+              <option value="CRITICAL" style="color: #ef4444; font-weight: 700;">CRITICAL</option>
+              <option value="HIGH" selected style="color: #f97316; font-weight: 700;">HIGH</option>
+              <option value="MEDIUM" style="color: #f59e0b; font-weight: 700;">MEDIUM</option>
+              <option value="LOW" style="color: #10b981; font-weight: 700;">LOW / INFO</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Anatomical Region</label>
+            <select id="modal-alert-region" class="form-input" style="width: 100%;">
+              <option value="Bilateral Insole">Bilateral Insole</option>
+              <option value="Left Forefoot (L3/L4)">Left Forefoot (L3/L4)</option>
+              <option value="Right Forefoot (R3/R4)">Right Forefoot (R3/R4)</option>
+              <option value="Left Midfoot / Arch (L2)">Left Arch (L2)</option>
+              <option value="Right Midfoot / Arch (R2)">Right Arch (R2)</option>
+              <option value="Left Heel (L1)">Left Heel (L1)</option>
+              <option value="Right Heel (R1)">Right Heel (R1)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Alert Title</label>
+          <input type="text" id="modal-alert-title" class="form-input" placeholder="e.g. Offloading Recommended — Peak Pressure Spike" style="width: 100%;" required>
+        </div>
+
+        <div>
+          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Clinical Instructions / Description</label>
+          <textarea id="modal-alert-desc" class="form-input" rows="3" placeholder="Provide actionable advice for the patient (e.g., inspect right heel for tissue redness, restrict weight bearing for 24 hours)..." style="width: 100%; resize: vertical;" required></textarea>
+        </div>
+
+      </div>
+
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
+        <button type="button" class="btn-filter" onclick="closeCreateAlertModal()" style="padding: 0.5rem 1rem;">Cancel</button>
+        <button type="submit" class="btn-primary" id="btn-submit-alert" style="background: linear-gradient(135deg, #ef4444, #dc2626); border-color: #f87171; padding: 0.5rem 1.25rem;">
+          Dispatch Alert Now
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -240,10 +571,57 @@
     color: var(--primary-cyan);
     border-color: var(--border-glow);
   }
+
+  /* Modal Dialog Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(5, 8, 15, 0.85);
+    backdrop-filter: blur(12px);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .modal-card {
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 540px;
+    padding: 1.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+    animation: modalFadeIn 0.25s ease-out;
+  }
+
+  @keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-15px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .btn-close-modal {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .btn-close-modal:hover { color: #fff; }
 </style>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    {% if featured_patient %}
+    window.initSmartfootSocket({{ featured_patient.id }});
+    const initialZones = {{ pressure_zones|tojson }};
+    if (window.FootPressureMap && initialZones) {
+      window.FootPressureMap.update(initialZones);
+    }
+    {% endif %}
+
     // Time-aware greeting calculation
     const hour = new Date().getHours();
     const greetingEl = document.getElementById('time-greeting');
@@ -283,6 +661,58 @@
       const matchesSearch = !searchVal || name.includes(searchVal) || code.includes(searchVal);
 
       row.style.display = (matchesRisk && matchesSearch) ? '' : 'none';
+    });
+  }
+
+  function openCreateAlertModal(patientId) {
+    const modal = document.getElementById('create-alert-modal');
+    if (modal) modal.style.display = 'flex';
+    if (patientId) {
+      const select = document.getElementById('modal-patient-id');
+      if (select) select.value = patientId;
+    }
+  }
+
+  function closeCreateAlertModal() {
+    const modal = document.getElementById('create-alert-modal');
+    if (modal) modal.style.display = 'none';
+  }
+
+  function submitNewAlert(event) {
+    event.preventDefault();
+    const btn = document.getElementById('btn-submit-alert');
+    btn.disabled = true;
+    btn.textContent = 'Dispatching...';
+
+    const payload = {
+      patient_id: document.getElementById('modal-patient-id').value,
+      severity: document.getElementById('modal-alert-severity').value,
+      region: document.getElementById('modal-alert-region').value,
+      title: document.getElementById('modal-alert-title').value,
+      description: document.getElementById('modal-alert-desc').value
+    };
+
+    fetch('/doctor/api/create-alert', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+      btn.disabled = false;
+      btn.textContent = 'Dispatch Alert Now';
+      if (data.success) {
+        alert(data.message);
+        closeCreateAlertModal();
+        window.location.reload();
+      } else {
+        alert(data.message || 'Error dispatching alert.');
+      }
+    })
+    .catch(err => {
+      btn.disabled = false;
+      btn.textContent = 'Dispatch Alert Now';
+      alert('Failed to send alert.');
     });
   }
 

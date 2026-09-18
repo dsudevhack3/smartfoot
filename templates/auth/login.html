@@ -46,43 +46,59 @@
     </div>
 
     {% if demo_mode %}
-    <!-- Instant Demo Persona Selector (Quick Login Gated behind DEMO_MODE) -->
+    <!-- 2-Column Dedicated Demo Persona Selector (Patient Column vs Doctor Column) -->
     <div class="persona-switcher">
-      <div class="persona-title">
-        <i data-lucide="zap" style="width: 14px; height: 14px; vertical-align: middle; color: var(--primary-cyan);"></i>
-        Instant Demo Persona Selector
+      <div class="persona-title" style="margin-bottom: 1rem; text-align: center;">
+        <i data-lucide="zap" style="width: 16px; height: 16px; vertical-align: middle; color: var(--primary-cyan);"></i>
+        Select Portal Demo Persona
       </div>
 
-      <div class="persona-list">
-        {% for p in demo_patients %}
-        <a href="{{ url_for('auth.demo_login', user_id=p.user_id) }}" class="persona-item">
-          <div class="persona-user">
-            <img src="{{ p.photo }}" class="persona-avatar" alt="{{ p.name }}">
-            <div>
-              <div class="persona-name">{{ p.name }}</div>
-              <div class="persona-sub">Patient • {{ p.patient_code }}</div>
-            </div>
+      <div class="persona-columns-grid">
+        <!-- Column 1: Patient Portal Personas -->
+        <div class="persona-column">
+          <div class="column-header patient">
+            <i data-lucide="user" style="width: 14px; height: 14px;"></i> Patient Portal
           </div>
-          <span class="risk-level-badge {% if p.risk_score > 60 %}HIGH{% elif p.risk_score >= 30 %}MODERATE{% else %}LOW{% endif %}" style="font-size: 0.7rem; padding: 0.2rem 0.6rem;">
-            Risk {{ p.risk_score|round(1) }}
-          </span>
-        </a>
-        {% endfor %}
+          <div class="persona-list">
+            {% for p in demo_patients %}
+            <a href="{{ url_for('auth.demo_login', user_id=p.user_id) }}" class="persona-item">
+              <div class="persona-user">
+                <img src="{{ p.photo }}" class="persona-avatar" alt="{{ p.name }}">
+                <div>
+                  <div class="persona-name">{{ p.name }}</div>
+                  <div class="persona-sub">{{ p.patient_code }}</div>
+                </div>
+              </div>
+              <span class="risk-level-badge {% if p.risk_score > 60 %}HIGH{% elif p.risk_score >= 30 %}MODERATE{% else %}LOW{% endif %}" style="font-size: 0.65rem; padding: 0.15rem 0.5rem;">
+                Risk {{ p.risk_score|round(1) }}
+              </span>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
 
-        {% for d in demo_doctors %}
-        <a href="{{ url_for('auth.demo_login', user_id=d.user_id) }}" class="persona-item" style="border-color: rgba(6, 182, 212, 0.3);">
-          <div class="persona-user">
-            <img src="{{ d.photo }}" class="persona-avatar" alt="{{ d.name }}">
-            <div>
-              <div class="persona-name">{{ d.name }}</div>
-              <div class="persona-sub">Physician • {{ d.credentials }}</div>
-            </div>
+        <!-- Column 2: Doctor Console Personas -->
+        <div class="persona-column">
+          <div class="column-header doctor">
+            <i data-lucide="stethoscope" style="width: 14px; height: 14px;"></i> Doctor Console
           </div>
-          <span style="background: rgba(6, 182, 212, 0.15); color: var(--primary-cyan); border: 1px solid var(--border-glow); padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.7rem; font-weight: 700;">
-            DOCTOR
-          </span>
-        </a>
-        {% endfor %}
+          <div class="persona-list">
+            {% for d in demo_doctors %}
+            <a href="{{ url_for('auth.demo_login', user_id=d.user_id) }}" class="persona-item doctor-item">
+              <div class="persona-user">
+                <img src="{{ d.photo }}" class="persona-avatar" alt="{{ d.name }}">
+                <div>
+                  <div class="persona-name">{{ d.name }}</div>
+                  <div class="persona-sub">{{ d.credentials }}</div>
+                </div>
+              </div>
+              <span class="doctor-badge">
+                MD
+              </span>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
       </div>
     </div>
     {% endif %}

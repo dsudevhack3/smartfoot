@@ -13,10 +13,8 @@ class RiskEngine:
         peak_zone = "Heel"
         
         zone_names_readable = {
-            'L_heel': 'Left Heel', 'L_lat_mid': 'Left Lateral Midfoot', 'L_med_mid': 'Left Medial Midfoot',
-            'L_met1': 'Left 1st Metatarsal', 'L_met5': 'Left 5th Metatarsal', 'L_hallux': 'Left Big Toe',
-            'R_heel': 'Right Heel', 'R_lat_mid': 'Right Lateral Midfoot', 'R_med_mid': 'Right Medial Midfoot',
-            'R_met1': 'Right 1st Metatarsal', 'R_met5': 'Right 5th Metatarsal', 'R_hallux': 'Right Big Toe'
+            'L_toe': 'Left Big Toe', 'L_met': 'Left Forefoot Metatarsal', 'L_arch': 'Left Midfoot Arch', 'L_heel': 'Left Heel',
+            'R_toe': 'Right Big Toe', 'R_met': 'Right Forefoot Metatarsal', 'R_arch': 'Right Midfoot Arch', 'R_heel': 'Right Heel'
         }
 
         for zone_key, val in pressure_zones.items():
