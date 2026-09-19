@@ -4,122 +4,209 @@
 
 {% block content %}
 <div class="login-body">
-  <!-- Single Centered Card Layout (Max Width ~520px) -->
-  <div class="login-card">
+  <div class="login-split-container">
     
-    <div class="login-header">
-      <div class="login-logo">
-        <i data-lucide="activity" style="width: 28px; height: 28px; stroke-width: 2.5;"></i>
+    <!-- LEFT COLUMN: Brand Showcase & Insole Visual (Matching Reference Image 1) -->
+    <div class="login-showcase-col">
+      <div class="prototype-tag">
+        <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i> Smart Health Technology Prototype
       </div>
-      <h1 class="login-title">Welcome Back</h1>
-      <p class="login-subtext">Sign in with your email or select a demo persona to inspect telemetry.</p>
+
+      <div class="showcase-brand">
+        <div class="showcase-brand-icon">
+          <i data-lucide="activity" style="width: 28px; height: 28px; stroke-width: 2.5;"></i>
+        </div>
+        <div class="showcase-brand-name">SmartFoot</div>
+      </div>
+
+      <p class="showcase-desc">
+        Smart Diabetic Foot Monitoring & Early Warning System. Continuous bilateral plantar pressure, thermal asymmetry, and gait analysis.
+      </p>
+
+      <!-- Insole Preview Card Centerpiece -->
+      <div class="insole-preview-card">
+        <svg viewBox="0 0 160 300" width="130" height="240">
+          <defs>
+            <radialGradient id="insoleGlow" cx="50%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#0284c7" stop-opacity="0.85"/>
+              <stop offset="60%" stop-color="#0369a1" stop-opacity="0.95"/>
+              <stop offset="100%" stop-color="#072c47" stop-opacity="1"/>
+            </radialGradient>
+          </defs>
+          <!-- Insole Outline -->
+          <path d="M 65 10 C 25 10 10 32 12 65 C 14 90 28 110 30 135 C 34 170 50 205 54 240 C 56 265 80 270 98 268 C 118 266 128 248 128 225 C 128 195 116 160 116 125 C 116 85 132 45 132 30 C 132 14 95 10 65 10 Z"
+                fill="url(#insoleGlow)" stroke="#00e5ff" stroke-width="2"/>
+          <!-- Circuit Trace Lines -->
+          <line x1="55" y1="75" x2="55" y2="245" stroke="#00e5ff" stroke-width="0.8" opacity="0.5"/>
+          <line x1="95" y1="85" x2="70" y2="245" stroke="#00e5ff" stroke-width="0.8" opacity="0.5"/>
+          <line x1="75" y1="170" x2="75" y2="245" stroke="#00e5ff" stroke-width="0.8" opacity="0.5"/>
+          <!-- R3 Forefoot Big Toe (Red/Brown) -->
+          <rect x="36" y="42" width="34" height="28" rx="5" fill="#ef4444" stroke="#ffffff" stroke-width="1"/>
+          <!-- R4 Lateral Forefoot (Orange) -->
+          <circle cx="98" cy="85" r="16" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+          <!-- T1 Thermistor -->
+          <circle cx="78" cy="60" r="7" fill="#091b2e" stroke="#00e5ff" stroke-width="1.2"/>
+          <text x="78" y="63" font-size="6" font-weight="900" fill="#ffffff" text-anchor="middle">T1</text>
+          <!-- R2 Arch (Cyan) -->
+          <circle cx="75" cy="168" r="15" fill="#06b6d4" stroke="#ffffff" stroke-width="1"/>
+          <!-- R1 Heel (Green) -->
+          <rect x="60" y="235" width="34" height="28" rx="5" fill="#10b981" stroke="#ffffff" stroke-width="1"/>
+        </svg>
+
+        <div class="insole-preview-title">4-FSR & Calibrated Insole</div>
+        <div class="insole-preview-sub">Calibrated Plantar & Skin Thermometry</div>
+      </div>
+
+      <div class="medical-notice-text">
+        <strong>Medical Notice:</strong> This AI-assisted platform provides observational early warnings and does not claim to diagnose diabetic foot ulcers or substitute physician evaluation.
+      </div>
     </div>
 
-    <!-- OTP Login Form -->
-    <div id="otp-form-container">
-      <div class="form-group">
-        <label class="form-label" for="login-email">Registered Email Address</label>
-        <div style="display: flex; gap: 0.5rem;">
-          <input type="email" id="login-email" class="form-input" placeholder="e.g. sita@smartfoot.med" value="sita@smartfoot.med" required>
-          <button type="button" id="btn-request-otp" class="btn-primary" style="width: auto; white-space: nowrap; padding: 0.75rem 1.25rem;">
-            Send OTP
+    <!-- RIGHT COLUMN: Interactive Login Card (Preserving Auth + Tabbed Routing) -->
+    <div class="login-card">
+      
+      <div class="login-header">
+        <h1 class="login-title">Welcome Back</h1>
+        <p class="login-subtext">Sign in with your Google account or select a demo role to inspect telemetry.</p>
+      </div>
+
+      <!-- Portal Tabs: Patient Portal vs Doctor Portal (Role-Aware Routing) -->
+      <div class="portal-tab-group">
+        <button type="button" class="portal-tab-btn active" id="tab-patient" onclick="switchPortalTab('PATIENT')">
+          <i data-lucide="user" style="width: 16px; height: 16px;"></i> Patient Portal
+        </button>
+        <button type="button" class="portal-tab-btn" id="tab-doctor" onclick="switchPortalTab('DOCTOR')">
+          <i data-lucide="stethoscope" style="width: 16px; height: 16px;"></i> Doctor Portal
+        </button>
+      </div>
+
+      <!-- Google Sign-In Demo Environment Notice -->
+      <div class="google-auth-notice">
+        <i data-lucide="shield-alert" style="width: 20px; height: 20px; color: #38bdf8; flex-shrink: 0; margin-top: 2px;"></i>
+        <div>
+          <strong>Google Sign-In</strong> requires <code>VITE_GOOGLE_CLIENT_ID</code> to be set in your Vercel environment variables. Use the Demo Access below for evaluation.
+        </div>
+      </div>
+
+      <!-- Email / OTP Fast Login Form -->
+      <div id="otp-form-container" style="margin-bottom: 1.5rem; background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 1rem;">
+        <div class="form-group" style="margin-bottom: 0.5rem;">
+          <label class="form-label" for="login-email" style="display: flex; justify-content: space-between;">
+            <span>Registered Email Address</span>
+            <span id="role-email-hint" style="color: var(--primary-cyan); font-weight: 600; font-size: 0.72rem;">Patient Login</span>
+          </label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="email" id="login-email" class="form-input" placeholder="e.g. sita@smartfoot.med" value="sita@smartfoot.med" required style="font-size: 0.85rem; padding: 0.6rem 0.85rem;">
+            <button type="button" id="btn-request-otp" class="btn-primary" style="width: auto; white-space: nowrap; padding: 0.6rem 1rem; font-size: 0.85rem;">
+              Send OTP
+            </button>
+          </div>
+        </div>
+
+        <!-- OTP Entry Field (Revealed on Request) -->
+        <div id="otp-entry-section" style="display: none; margin-top: 0.85rem;">
+          <div class="form-group" style="margin-bottom: 0.5rem;">
+            <label class="form-label" for="login-otp">Enter 6-Digit OTP Code</label>
+            <input type="text" id="login-otp" class="form-input" placeholder="123456" maxlength="6" style="letter-spacing: 0.4em; text-align: center; font-size: 1.1rem; font-weight: 700; padding: 0.5rem;">
+          </div>
+
+          <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid var(--border-glow); border-radius: 6px; padding: 0.4rem; font-size: 0.75rem; color: var(--primary-cyan); text-align: center; margin-bottom: 0.75rem;">
+            <i data-lucide="key" style="width: 12px; height: 12px; vertical-align: middle;"></i>
+            Demo mode: OTP is <strong>{{ demo_otp }}</strong>
+          </div>
+
+          <button type="button" id="btn-verify-otp" class="btn-primary" style="padding: 0.65rem; font-size: 0.85rem;">
+            Verify OTP & Sign In
           </button>
         </div>
       </div>
 
-      <!-- OTP Entry Field (Shown after requesting OTP) -->
-      <div id="otp-entry-section" style="display: none; margin-top: 1rem;">
-        <div class="form-group">
-          <label class="form-label" for="login-otp">Enter 6-Digit OTP Code</label>
-          <input type="text" id="login-otp" class="form-input" placeholder="123456" maxlength="6" style="letter-spacing: 0.4em; text-align: center; font-size: 1.2rem; font-weight: 700;">
-        </div>
+      {% if demo_mode %}
+      <!-- INSTANT DEMO PERSONA SELECTOR (Filtered by Selected Portal Tab) -->
+      <div class="demo-selector-heading">INSTANT DEMO PERSONA SELECTOR</div>
 
-        <div style="background: rgba(6, 182, 212, 0.1); border: 1px solid var(--border-glow); border-radius: 8px; padding: 0.6rem; font-size: 0.8rem; color: var(--primary-cyan); text-align: center; margin-bottom: 1rem;">
-          <i data-lucide="key" style="width: 14px; height: 14px; vertical-align: middle;"></i>
-          Demo mode: OTP is <strong>{{ demo_otp }}</strong>
-        </div>
-
-        <button type="button" id="btn-verify-otp" class="btn-primary">
-          Verify OTP & Sign In
-        </button>
-      </div>
-    </div>
-
-    {% if demo_mode %}
-    <!-- 2-Column Dedicated Demo Persona Selector (Patient Column vs Doctor Column) -->
-    <div class="persona-switcher">
-      <div class="persona-title" style="margin-bottom: 1rem; text-align: center;">
-        <i data-lucide="zap" style="width: 16px; height: 16px; vertical-align: middle; color: var(--primary-cyan);"></i>
-        Select Portal Demo Persona
+      <!-- Patient Portal Personas (Visible when Patient Portal Tab is active) -->
+      <div id="persona-list-patient" class="persona-list-v2">
+        {% for p in demo_patients %}
+        <a href="{{ url_for('auth.demo_login', user_id=p.user_id) }}" class="persona-item-v2" title="Log in as {{ p.name }} (Patient)">
+          <div style="display: flex; align-items: center; gap: 0.85rem;">
+            <div class="persona-avatar-letter">{{ p.name[0] }}</div>
+            <div>
+              <div style="font-weight: 700; color: #ffffff; font-size: 0.88rem;">{{ p.name }}</div>
+              <div style="font-size: 0.72rem; color: #94a3b8;">{{ p.risk_level }} ({{ p.risk_score|round|int }})</div>
+            </div>
+          </div>
+          <i data-lucide="chevron-right" style="color: #64748b; width: 18px; height: 18px;"></i>
+        </a>
+        {% endfor %}
       </div>
 
-      <div class="persona-columns-grid">
-        <!-- Column 1: Patient Portal Personas -->
-        <div class="persona-column">
-          <div class="column-header patient">
-            <i data-lucide="user" style="width: 14px; height: 14px;"></i> Patient Portal
+      <!-- Doctor Portal Personas (Visible when Doctor Portal Tab is active) -->
+      <div id="persona-list-doctor" class="persona-list-v2" style="display: none;">
+        {% for d in demo_doctors %}
+        <a href="{{ url_for('auth.demo_login', user_id=d.user_id) }}" class="persona-item-v2" title="Log in as {{ d.name }} (Doctor)">
+          <div style="display: flex; align-items: center; gap: 0.85rem;">
+            <div class="persona-avatar-letter">
+              {% if d.name.startswith('Dr. ') %}
+                {{ d.name[4] }}
+              {% else %}
+                {{ d.name[0] }}
+              {% endif %}
+            </div>
+            <div>
+              <div style="font-weight: 700; color: #ffffff; font-size: 0.88rem;">{{ d.name }}</div>
+              <div style="font-size: 0.72rem; color: #94a3b8;">{{ d.credentials }}</div>
+            </div>
           </div>
-          <div class="persona-list">
-            {% for p in demo_patients %}
-            <a href="{{ url_for('auth.demo_login', user_id=p.user_id) }}" class="persona-item">
-              <div class="persona-user">
-                <img src="{{ p.photo }}" class="persona-avatar" alt="{{ p.name }}">
-                <div>
-                  <div class="persona-name">{{ p.name }}</div>
-                  <div class="persona-sub">{{ p.patient_code }}</div>
-                </div>
-              </div>
-              <span class="risk-level-badge {% if p.risk_score > 60 %}HIGH{% elif p.risk_score >= 30 %}MODERATE{% else %}LOW{% endif %}" style="font-size: 0.65rem; padding: 0.15rem 0.5rem;">
-                Risk {{ p.risk_score|round(1) }}
-              </span>
-            </a>
-            {% endfor %}
-          </div>
-        </div>
-
-        <!-- Column 2: Doctor Console Personas -->
-        <div class="persona-column">
-          <div class="column-header doctor">
-            <i data-lucide="stethoscope" style="width: 14px; height: 14px;"></i> Doctor Console
-          </div>
-          <div class="persona-list">
-            {% for d in demo_doctors %}
-            <a href="{{ url_for('auth.demo_login', user_id=d.user_id) }}" class="persona-item doctor-item">
-              <div class="persona-user">
-                <img src="{{ d.photo }}" class="persona-avatar" alt="{{ d.name }}">
-                <div>
-                  <div class="persona-name">{{ d.name }}</div>
-                  <div class="persona-sub">{{ d.credentials }}</div>
-                </div>
-              </div>
-              <span class="doctor-badge">
-                MD
-              </span>
-            </a>
-            {% endfor %}
-          </div>
-        </div>
+          <i data-lucide="chevron-right" style="color: #64748b; width: 18px; height: 18px;"></i>
+        </a>
+        {% endfor %}
       </div>
-    </div>
-    {% endif %}
+      {% endif %}
 
-    <!-- Footer Medical Disclaimer & Security Notice -->
-    <div class="login-footer-disclaimer">
-      <p style="margin-bottom: 0.5rem; color: #d1d5db;">
-        <em>"This AI-assisted platform provides observational early warnings and does not claim to diagnose diabetic foot ulcers or substitute physician evaluation."</em>
-      </p>
-      <div style="display: flex; align-items: center; justify-content: center; gap: 0.4rem; color: var(--text-dim); font-size: 0.68rem;">
+      <!-- Security Notice Footer -->
+      <div style="margin-top: 1.5rem; text-align: center; color: #64748b; font-size: 0.72rem; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
         <i data-lucide="shield-check" style="width: 14px; height: 14px; color: var(--teal-accent);"></i>
         Encrypted healthcare session • Role-based access control enabled
       </div>
-    </div>
 
+    </div>
   </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+  let activePortalRole = 'PATIENT';
+
+  function switchPortalTab(role) {
+    activePortalRole = role;
+    
+    // Toggle active state on buttons
+    const btnPatient = document.getElementById('tab-patient');
+    const btnDoctor = document.getElementById('tab-doctor');
+    const listPatient = document.getElementById('persona-list-patient');
+    const listDoctor = document.getElementById('persona-list-doctor');
+    const emailInput = document.getElementById('login-email');
+    const roleHint = document.getElementById('role-email-hint');
+
+    if (role === 'PATIENT') {
+      btnPatient.classList.add('active');
+      btnDoctor.classList.remove('active');
+      if (listPatient) listPatient.style.display = 'flex';
+      if (listDoctor) listDoctor.style.display = 'none';
+      if (emailInput) emailInput.value = 'sita@smartfoot.med';
+      if (roleHint) roleHint.textContent = 'Patient Login';
+    } else {
+      btnDoctor.classList.add('active');
+      btnPatient.classList.remove('active');
+      if (listPatient) listPatient.style.display = 'none';
+      if (listDoctor) listDoctor.style.display = 'flex';
+      if (emailInput) emailInput.value = 'aris@smartfoot.med';
+      if (roleHint) roleHint.textContent = 'Doctor Login';
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     const btnRequest = document.getElementById('btn-request-otp');
     const btnVerify = document.getElementById('btn-verify-otp');
@@ -163,7 +250,7 @@
 
         if (data.success) {
           otpSection.style.display = 'block';
-          otpInput.value = '123456';  // Pre-fill demo OTP code for convenience
+          otpInput.value = '123456';
           otpInput.focus();
         } else {
           alert(data.message || 'Error sending OTP.');

@@ -52,7 +52,7 @@ def dashboard():
             r_score = latest_t.risk_score
             p_zones = latest_t.pressure_zones
             peak_p = max(p_zones.values()) if p_zones else 30.0
-            t_diff = round(abs(latest_t.temperature_left - latest_t.temperature_right), 1)
+            t_diff = round(abs(latest_t.temperature_right - float(p.baseline_temp or 32.2)), 1)
             asym = latest_t.gait_data.get('asymmetry', 0.0) if latest_t.gait_data else 0.0
             gait_sym = round(max(0.0, 100.0 - asym), 1)
             last_seen = latest_t.timestamp.strftime('%H:%M:%S')
@@ -108,6 +108,13 @@ def dashboard():
         ft_gait = {'cadence': 100, 'asymmetry': 0.0, 'impact_g': 1.1}
         ft_risk_data = {'score': 15, 'level': 'LOW', 'takeaway': 'Baseline stable.'}
 
+    # Collect all active alerts across assigned patients for Active Alerts section
+    patient_ids = [p.id for p in assigned_patients]
+    all_active_alerts = Alert.query.filter(
+        Alert.patient_id.in_(patient_ids),
+        Alert.status == 'ACTIVE'
+    ).order_by(Alert.created_at.desc()).all() if patient_ids else []
+
     return render_template(
         'doctor/dashboard.html',
         doctor=doctor,
@@ -119,11 +126,12 @@ def dashboard():
             'active_alerts': total_active_alerts
         },
         patient_rows=patient_rows,
+        alerts=all_active_alerts,
         featured_patient=featured_patient,
         pressure_zones=ft_p_zones,
         temp_left=ft_tl,
         temp_right=ft_tr,
-        temp_diff=round(abs(ft_tl - ft_tr), 1),
+        temp_diff=round(abs(ft_tr - float(featured_patient.baseline_temp or 32.2)), 1),
         gait=ft_gait,
         risk_data=ft_risk_data,
         demo_mode=Config.DEMO_MODE
@@ -164,7 +172,7 @@ def patient_detail(patient_id):
         pressure_zones=p_zones,
         temp_left=tl,
         temp_right=tr,
-        temp_diff=round(abs(tl - tr), 1),
+        temp_diff=round(abs(tr - float(patient.baseline_temp or 32.2)), 1),
         gait=gait,
         risk_data=risk_data,
         alerts=active_alerts,

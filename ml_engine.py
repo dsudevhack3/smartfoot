@@ -36,9 +36,8 @@ class MLEngine:
         peak_zone = "Heel"
 
         zone_names_readable = {
-            'L_toe': 'Left Big Toe', 'L_met': 'Left Forefoot Metatarsal', 'L_arch': 'Left Midfoot Arch', 'L_heel': 'Left Heel',
-            'R_toe': 'Right Big Toe', 'R_met': 'Right Forefoot Metatarsal', 'R_arch': 'Right Midfoot Arch', 'R_heel': 'Right Heel',
-            'L_met1': 'Left Forefoot Metatarsal', 'R_met1': 'Right Forefoot Metatarsal'
+            'R_toe': 'Right Big Toe', 'R_met': 'Right Forefoot Metatarsal',
+            'R_arch': 'Right Midfoot Arch', 'R_heel': 'Right Heel'
         }
 
         for zone_key, val in pressure_zones.items():
@@ -51,14 +50,10 @@ class MLEngine:
 
         avg_dev = sum_dev / max(1, len(pressure_zones))
 
-        # Temperature Evaluation (Unilateral vs Bilateral)
-        if patient and getattr(patient, 'amputated_foot', None) == 'LEFT':
-            base_t = float(getattr(patient, 'baseline_temp', 32.2) or 32.2)
-            temp_diff = abs(float(temp_right) - base_t)
-            is_unilateral = True
-        else:
-            temp_diff = abs(float(temp_left) - float(temp_right))
-            is_unilateral = False
+        # Temperature Evaluation (Unilateral Right Foot Telemetry)
+        base_t = float(getattr(patient, 'baseline_temp', 32.2) or 32.2)
+        temp_diff = abs(float(temp_right) - base_t)
+        is_unilateral = True
 
         gait_asym = float(gait_data.get('asymmetry', 0.0)) if gait_data else 0.0
         cadence = float(gait_data.get('cadence', 100)) if gait_data else 100.0
@@ -121,29 +116,17 @@ class MLEngine:
             p_status = "High Pressure Spike"
             p_explain = f"Critical pressure focal point (+{round(max_dev, 1)} kPa) detected on {peak_zone}."
 
-        if is_unilateral:
-            base_t = float(getattr(patient, 'baseline_temp', 32.2) or 32.2)
-            temp_score = min(100.0, (temp_diff / 2.5) * 100.0)
-            if temp_diff < 0.8:
-                t_status = "Normal Unilateral Temperature"
-                t_explain = f"Right foot temperature ({round(temp_right, 1)}°C) is close to baseline ({base_t}°C)."
-            elif temp_diff <= 2.0:
-                t_status = "Elevated Foot Temperature"
-                t_explain = f"Moderate right foot temperature elevation ({round(temp_right, 1)}°C vs baseline {base_t}°C)."
-            else:
-                t_status = "Severe Foot Hotspot"
-                t_explain = f"Significant right foot hotspot detected ({round(temp_right, 1)}°C vs baseline {base_t}°C), indicating inflammation risk."
+        base_t = float(getattr(patient, 'baseline_temp', 32.2) or 32.2)
+        temp_score = min(100.0, (temp_diff / 2.5) * 100.0)
+        if temp_diff < 0.8:
+            t_status = "Normal Insole Temperature"
+            t_explain = f"Right foot temperature ({round(temp_right, 1)}°C) is close to baseline ({base_t}°C)."
+        elif temp_diff <= 2.0:
+            t_status = "Elevated Foot Temperature"
+            t_explain = f"Moderate right foot temperature elevation ({round(temp_right, 1)}°C vs baseline {base_t}°C)."
         else:
-            temp_score = min(100.0, (temp_diff / 3.0) * 100.0)
-            if temp_diff < 0.8:
-                t_status = "Symmetric Thermal Map"
-                t_explain = f"Left vs Right temperature difference is minimal ({round(temp_diff, 1)}°C)."
-            elif temp_diff <= 2.0:
-                t_status = "Mild Thermal Asymmetry"
-                t_explain = f"Mild focal temperature difference detected ({round(temp_diff, 1)}°C between feet)."
-            else:
-                t_status = "Severe Thermal Asymmetry"
-                t_explain = f"Significant hotspot detected ({round(temp_diff, 1)}°C difference), indicating localized inflammation risk."
+            t_status = "Severe Foot Hotspot"
+            t_explain = f"Significant right foot hotspot detected ({round(temp_right, 1)}°C vs baseline {base_t}°C), indicating inflammation risk."
 
         gait_score = min(100.0, (gait_asym / 25.0) * 100.0)
         if gait_score < 30:

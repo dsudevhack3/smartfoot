@@ -85,20 +85,16 @@ class SmartfootSocketClient {
 
   handleTelemetryData(data) {
     // 1. Update Stat Cards
-    const tempLeftEl = document.getElementById('stat-temp-left');
     const tempRightEl = document.getElementById('stat-temp-right');
-    const tempDiffEl = document.getElementById('stat-temp-diff');
     const peakPressureEl = document.getElementById('stat-peak-pressure');
     const gaitSymEl = document.getElementById('stat-gait-sym');
 
-    if (tempLeftEl) tempLeftEl.textContent = `${data.temperature_left}°C`;
-    if (tempRightEl) tempRightEl.textContent = `${data.temperature_right}°C`;
-    if (tempDiffEl) tempDiffEl.textContent = `Δ ${data.temp_diff}°C`;
+    if (tempRightEl) {
+      tempRightEl.textContent = `${data.temperature_right}`;
+    }
 
-    // Update insole temperature badges on the foot map card
-    const tbLeft  = document.getElementById('temp-badge-left');
+    // Update insole temperature badge on the foot map card
     const tbRight = document.getElementById('temp-badge-right');
-    if (tbLeft)  tbLeft.textContent  = `${data.temperature_left}°C`;
     if (tbRight) tbRight.textContent = `${data.temperature_right}°C`;
 
     if (peakPressureEl && data.pressure_zones) {

@@ -55,7 +55,7 @@ def seed_database():
         baseline_pressure=sita_baseline_p,
         baseline_temp=32.2,
         baseline_gait=92.0,
-        amputated_foot="LEFT"
+        amputated_foot=None
     )
     db.session.add(patient_sita)
     db.session.flush()
@@ -80,7 +80,6 @@ def seed_database():
     db.session.flush()
 
     rajesh_baseline_p = {
-        'L_toe': 26.0, 'L_met': 30.0, 'L_arch': 21.0, 'L_heel': 38.0,
         'R_toe': 27.0, 'R_met': 32.0, 'R_arch': 22.0, 'R_heel': 40.0
     }
     patient_rajesh = Patient(
@@ -116,7 +115,6 @@ def seed_database():
     db.session.flush()
 
     anita_baseline_p = {
-        'L_toe': 22.0, 'L_met': 27.0, 'L_arch': 17.0, 'L_heel': 32.0,
         'R_toe': 23.0, 'R_met': 27.0, 'R_arch': 17.0, 'R_heel': 33.0
     }
     patient_anita = Patient(

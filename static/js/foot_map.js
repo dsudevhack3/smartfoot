@@ -1,15 +1,17 @@
 /**
- * SMARTFOOT 8-Zone Bilateral Insole Pressure Heatmap Renderer
+ * SMARTFOOT Right Insole Plantar Pressure Heatmap Renderer
  *
- * Zone keys:
- *   Left:  L_toe (L3), L_met (L4), L_arch (L2), L_heel (L1)
- *   Right: R_toe (R3), R_met (R4), R_arch (R2), R_heel (R1)
+ * Zone keys (Right Foot Only — 4 FSR Sensors + 1 Thermistor T1):
+ *   R_toe (R3) — Medial Forefoot / Big Toe
+ *   R_met (R4) — Lateral Forefoot Metatarsal
+ *   R_arch (R2) — Midfoot Arch
+ *   R_heel (R1) — Heel
  *
  * Color scale (matches reference image gradient bar):
- *   < 25 kPa  → Cyan   (#06b6d4)  Low
- *   25–50 kPa → Green  (#10b981)  Normal
- *   50–70 kPa → Amber  (#f59e0b)  Warning
- *   > 70 kPa  → Pink   (#f43f8c)  Critical
+ *   < 35 kPa  → Cyan/Teal  (#279ca8)  Low
+ *   35–65 kPa → Emerald    (#27a869)  Normal
+ *   65–85 kPa → Amber      (#f59e0b)  Warning
+ *   > 85 kPa  → Pink       (#f43f8c)  Critical
  */
 
 window.FootPressureMap = {
@@ -29,8 +31,8 @@ window.FootPressureMap = {
   },
 
   /**
-   * Update the insole SVG sensor nodes and value labels for all 8 zones.
-   * @param {Object} zones  e.g. {L_toe: 42.5, L_met: 49.0, L_arch: 28.0, L_heel: 42.0, ...}
+   * Update the right insole SVG sensor nodes and value labels.
+   * @param {Object} zones  e.g. {R_toe: 42.5, R_met: 49.0, R_arch: 28.0, R_heel: 42.0}
    */
   update: function (zones) {
     if (!zones) return;

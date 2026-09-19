@@ -562,128 +562,271 @@ a:hover {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: radial-gradient(circle at top center, rgba(6, 182, 212, 0.15), transparent 60%), var(--bg-dark);
-  padding: 1.5rem;
+  background: radial-gradient(circle at top center, rgba(6, 182, 212, 0.12), transparent 60%), #070d17;
+  padding: 2rem 1.5rem;
 }
 
+.login-split-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.5rem;
+  max-width: 1120px;
+  width: 100%;
+  align-items: center;
+}
+
+@media (max-width: 960px) {
+  .login-split-container {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .login-showcase-col {
+    display: none;
+  }
+}
+
+/* Left Brand Showcase Column */
+.login-showcase-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.prototype-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  color: #38bdf8;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.showcase-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.showcase-brand-icon {
+  width: 48px;
+  height: 48px;
+  background: #ffffff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0284c7;
+  box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+}
+
+.showcase-brand-name {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.showcase-desc {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #94a3b8;
+  max-width: 440px;
+}
+
+.insole-preview-card {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 20px;
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), inset 0 0 25px rgba(6, 182, 212, 0.05);
+  max-width: 320px;
+}
+
+.insole-preview-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #ffffff;
+  margin-top: 1rem;
+}
+
+.insole-preview-sub {
+  font-size: 0.75rem;
+  color: var(--primary-cyan);
+  margin-top: 0.25rem;
+}
+
+.medical-notice-text {
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: #64748b;
+  max-width: 440px;
+}
+
+/* Right Login Card */
 .login-card {
   width: 100%;
-  max-width: 520px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: rgba(13, 20, 36, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-lg);
   padding: 2.25rem;
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), var(--shadow-glow);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(6, 182, 212, 0.08);
+  backdrop-filter: blur(16px);
 }
 
 .login-header {
-  text-align: center;
-  margin-bottom: 1.75rem;
-}
-
-.login-logo {
-  width: 54px;
-  height: 54px;
-  background: linear-gradient(135deg, var(--primary-cyan), var(--teal-accent));
-  border-radius: 14px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #000;
-  margin-bottom: 0.75rem;
-  box-shadow: 0 0 20px var(--primary-cyan-glow);
+  text-align: left;
+  margin-bottom: 1.5rem;
 }
 
 .login-title {
-  font-size: 1.65rem;
+  font-size: 1.85rem;
   font-weight: 800;
   color: #fff;
+  letter-spacing: -0.02em;
 }
+
 .login-subtext {
   font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-top: 0.3rem;
+  color: #94a3b8;
+  margin-top: 0.35rem;
 }
 
-/* Form inputs & buttons */
-.form-group {
-  margin-bottom: 1.25rem;
+/* Tab Switcher: Patient Portal vs Doctor Portal */
+.portal-tab-group {
+  display: flex;
+  background: rgba(10, 15, 29, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.35rem;
+  gap: 0.35rem;
+  margin-bottom: 1.5rem;
 }
-.form-label {
-  display: block;
-  font-size: 0.8rem;
+
+.portal-tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #94a3b8;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-muted);
-  margin-bottom: 0.4rem;
-}
-.form-input {
-  width: 100%;
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 0.75rem 1rem;
-  color: #fff;
-  font-size: 0.95rem;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.form-input:focus {
-  border-color: var(--primary-cyan);
-  box-shadow: 0 0 0 3px var(--primary-cyan-glow);
-}
-
-.btn-primary {
-  width: 100%;
-  background: linear-gradient(135deg, var(--primary-cyan), #0891b2);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 0.85rem;
-  font-size: 0.95rem;
-  font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
-}
-.btn-primary:hover {
-  opacity: 0.92;
-  transform: translateY(-1px);
+  transition: all 0.2s ease;
 }
 
-/* Demo Persona Switcher List */
-.persona-switcher {
-  margin-top: 1.75rem;
-  padding-top: 1.25rem;
-  border-top: 1px dashed var(--border-color);
+.portal-tab-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.04);
 }
-.persona-title {
+
+.portal-tab-btn.active {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: rgba(6, 182, 212, 0.4);
+  color: #38bdf8;
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.15);
+}
+
+/* Notice Box / Google Sign-In note */
+.google-auth-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  line-height: 1.45;
+}
+
+.google-auth-notice code {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
   font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 0.85rem;
 }
-.persona-list {
+
+.demo-selector-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.demo-selector-heading::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Persona Items V2 matching reference image 1 */
+.persona-list-v2 {
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  max-height: 220px;
+  max-height: 260px;
   overflow-y: auto;
+  padding-right: 0.25rem;
 }
-.persona-item {
+
+.persona-item-v2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(9, 13, 22, 0.6);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 0.6rem 0.85rem;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  text-decoration: none;
+  transition: all 0.2s;
 }
-.persona-item:hover {
-  background: var(--bg-card-hover);
-  border-color: var(--border-glow);
+
+.persona-item-v2:hover {
+  background: rgba(6, 182, 212, 0.1);
+  border-color: rgba(6, 182, 212, 0.35);
+  transform: translateX(4px);
+}
+
+.persona-avatar-letter {
+  width: 34px;
+  height: 34px;
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+.persona-item-v2:hover .persona-avatar-letter {
+  color: #38bdf8;
+  border-color: rgba(6, 182, 212, 0.4);
 }
 
 .persona-user {
@@ -831,9 +974,25 @@ a:hover {
   padding: 1rem 0.85rem;
 }
 
+.insole-map-wrapper.insole-single-wrapper {
+  justify-content: center;
+  align-items: center;
+  gap: 2.2rem;
+  padding: 1.5rem 1.2rem;
+}
+
 .insole-col {
   flex: 1;
   min-width: 0;
+}
+
+.insole-single-wrapper .insole-col {
+  max-width: 280px;
+  flex: 0 1 280px;
+}
+
+.insole-single-wrapper .insole-svg {
+  max-width: 240px;
 }
 
 /* Header row: label left, temp badge right */

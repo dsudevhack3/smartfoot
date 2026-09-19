@@ -51,24 +51,24 @@ class PatientSimulator(threading.Thread):
                     base_p = dict(patient.baseline_pressure)
                     
                     if self.scenario == "HIGH_RISK" or (self.scenario == "DEFAULT" and patient.patient_code == "PT-8021"):
-                        # High risk profile (Sita Devi): Right Forefoot (R_met) focal pressure spike & 2.6°C temp diff
-                        temp_l = round(31.8 + sine_wave * 0.2 + noise * 0.1, 1)
-                        temp_r = round(34.5 + sine_wave * 0.3 + noise * 0.1, 1)
+                        # High risk profile (Sita Devi): Right Forefoot (R_met) focal pressure spike & 34.6°C elevated temp
+                        temp_r = round(34.6 + sine_wave * 0.3 + noise * 0.1, 1)
+                        temp_l = temp_r
                         asym = round(18.0 + sine_wave * 1.5 + noise, 1)
                         base_p['R_met'] = round(82.0 + sine_wave * 4.0 + noise * 2.0, 1)
                         base_p['R_toe'] = round(55.0 + sine_wave * 2.0, 1)
                     
                     elif self.scenario == "MODERATE" or (self.scenario == "DEFAULT" and patient.patient_code == "PT-5044"):
-                        # Moderate risk profile (Rajesh Kumar): Right heel pressure elevation & 1.2°C temp diff
-                        temp_l = round(32.4 + sine_wave * 0.15, 1)
+                        # Moderate risk profile (Rajesh Kumar): Right heel pressure elevation & 33.6°C temp
                         temp_r = round(33.6 + sine_wave * 0.2, 1)
+                        temp_l = temp_r
                         asym = round(9.5 + sine_wave * 0.8, 1)
                         base_p['R_heel'] = round(58.0 + sine_wave * 3.0 + noise, 1)
                     
                     else:  # LOW / NORMAL
-                        # Low risk profile (Anita Sharma): Symmetric temperatures & normal pressure values
-                        temp_l = round(32.1 + sine_wave * 0.1, 1)
-                        temp_r = round(32.4 + sine_wave * 0.1, 1)
+                        # Low risk profile (Anita Sharma): Normal right foot temperature & baseline pressures
+                        temp_r = round(32.3 + sine_wave * 0.1, 1)
+                        temp_l = temp_r
                         asym = round(3.2 + sine_wave * 0.3, 1)
                         for k in base_p:
                             base_p[k] = round(base_p[k] + sine_wave * 0.5 + noise * 0.2, 1)
@@ -108,9 +108,9 @@ class PatientSimulator(threading.Thread):
                         'patient_id': self.patient_id,
                         'timestamp': tele.timestamp.strftime('%H:%M:%S'),
                         'pressure_zones': base_p,
-                        'temperature_left': temp_l,
+                        'temperature_left': temp_r,
                         'temperature_right': temp_r,
-                        'temp_diff': round(abs(temp_l - temp_r), 1),
+                        'temp_diff': round(abs(temp_r - float(getattr(patient, 'baseline_temp', 32.2) or 32.2)), 1),
                         'gait_data': gait_data,
                         'risk_score': risk_res['score'],
                         'risk_level': risk_res['level'],

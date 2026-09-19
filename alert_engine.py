@@ -32,21 +32,21 @@ class AlertEngine:
             if alert:
                 alerts_generated.append(alert)
 
-        # 2. Temperature Asymmetry Evaluation
+        # 2. Temperature Hotspot Evaluation (Right Insole)
         temp_factor = risk_result['factors']['temperature']
         temp_diff = temp_factor['temp_diff']
         if temp_diff >= 1.5:
             severity = 'CRITICAL' if temp_diff >= 2.5 else ('HIGH' if temp_diff >= 2.0 else 'MEDIUM')
-            title = f"Temperature Asymmetry Detected — {temp_diff}°C Δ"
-            desc = f"Thermal gradient of {temp_diff}°C between left ({temp_left}°C) and right ({temp_right}°C) foot."
+            title = f"Focal Temperature Hotspot — {round(temp_right, 1)}°C"
+            desc = f"Right foot insole temperature reached {round(temp_right, 1)}°C (+{round(temp_diff, 1)}°C above baseline)."
             
             alert = AlertEngine._create_or_update_alert(
                 patient_id=patient_id,
-                alert_type='TEMP_ASYMMETRY',
+                alert_type='TEMP_HOTSPOT',
                 title=title,
                 description=desc,
                 severity=severity,
-                region="Bilateral Feet",
+                region="Right Insole",
                 deviation_value=temp_diff
             )
             if alert:

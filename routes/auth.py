@@ -37,11 +37,14 @@ def login_page():
         patients = Patient.query.all()
         for p in patients:
             latest_t = p.telemetries[-1] if p.telemetries else None
+            r_score = latest_t.risk_score if latest_t else 20.0
+            r_level = 'High Risk' if r_score > 60 else ('Moderate Risk' if r_score >= 30 else 'Low Risk')
             demo_patients.append({
                 'user_id': p.user.id,
                 'name': p.user.name,
                 'patient_code': p.patient_code,
-                'risk_score': latest_t.risk_score if latest_t else 20.0,
+                'risk_score': r_score,
+                'risk_level': r_level,
                 'email': p.user.email,
                 'photo': p.user.profile_photo_url
             })

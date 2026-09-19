@@ -95,9 +95,8 @@ void loop() {
     float kpa_r_met5    = adcToKpa(raw_r_met5);
     float kpa_r_hallux  = adcToKpa(raw_r_hallux);
 
-    // Read DS18B20 / Thermal sensors (°C)
-    float temp_left  = 31.8; // Set or read from DS18B20 Left probe
-    float temp_right = 34.2; // Set or read from DS18B20 Right probe
+    // Read DS18B20 / Thermistor sensor (°C) — Single insole sensor (T1)
+    float temp_right = 34.2; // Read from DS18B20 Right insole probe (T1)
 
     // ---------------------------------------------------------
     // 2. Build JSON Payload
@@ -114,8 +113,8 @@ void loop() {
     p_zones["R_met5"]    = kpa_r_met5;
     p_zones["R_hallux"]  = kpa_r_hallux;
 
-    doc["temperature_left"]  = temp_left;
     doc["temperature_right"] = temp_right;
+    doc["temperature_left"]  = temp_right;
 
     JsonObject gait = doc.createNestedObject("gait_data");
     gait["cadence"]   = 104;

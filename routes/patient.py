@@ -54,7 +54,7 @@ def dashboard():
         pressure_zones=p_zones,
         temp_left=tl,
         temp_right=tr,
-        temp_diff=round(abs(tl - tr), 1),
+        temp_diff=round(abs(tr - float(patient.baseline_temp or 32.2)), 1),
         gait=gait,
         risk_data=risk_data,
         active_alerts=active_alerts,
@@ -93,7 +93,7 @@ def trends_api():
     for r in records:
         # Distinct, human-readable timestamp string
         timestamps.append(r.timestamp.strftime('%b %d, %H:%M'))
-        temp_diffs.append(round(abs(r.temperature_left - r.temperature_right), 1))
+        temp_diffs.append(round(abs(r.temperature_right - float(patient.baseline_temp or 32.2)), 1))
         
         # Max pressure across 12 zones
         zones = r.pressure_zones
