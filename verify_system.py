@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from app import create_app
 from extensions import db
 from models import User, Patient, Doctor, Device, Telemetry, Alert
+from ml_engine import MLEngine
 from risk_engine import RiskEngine
 from alert_engine import AlertEngine
 from seed_data import seed_database
@@ -17,30 +18,33 @@ class SmartfootSystemTests(unittest.TestCase):
         with self.app.app_context():
             seed_database()
 
-    def test_01_risk_engine_determinism(self):
-        """Verify Risk Engine deterministic 40/30/30 calculations."""
+    def test_01_ml_engine_prediction_and_determinism(self):
+        """Verify ML Engine predictions, determinism, confidence scores, and factor breakdowns."""
         with self.app.app_context():
             patient = Patient.query.first()
             zones = dict(patient.baseline_pressure)
-            # Add spike on R_met1
-            zones['R_met1'] += 50.0
+            # Add spike on R_met
+            zones['R_met'] = zones.get('R_met', 30.0) + 50.0
 
-            res1 = RiskEngine.calculate(patient, zones, 31.8, 34.4, {'asymmetry': 18.0})
-            res2 = RiskEngine.calculate(patient, zones, 31.8, 34.4, {'asymmetry': 18.0})
+            res1 = MLEngine.predict(patient, zones, 31.8, 34.4, {'asymmetry': 18.0})
+            res2 = MLEngine.predict(patient, zones, 31.8, 34.4, {'asymmetry': 18.0})
 
-            self.assertEqual(res1['score'], res2['score'], "Risk score must be strictly deterministic!")
-            self.assertEqual(res1['level'], 'HIGH', "Risk level for 50 kPa spike + 2.6°C temp diff must be HIGH")
+            self.assertEqual(res1['score'], res2['score'], "ML Risk score must be strictly deterministic!")
+            self.assertEqual(res1['level'], 'HIGH', "ML Risk level for 50 kPa spike + 2.6°C temp diff must be HIGH")
+            self.assertIn('confidence', res1, "ML result must include confidence rating")
+            self.assertGreaterEqual(res1['confidence'], 50.0, "Confidence should be high for critical risk features")
             self.assertIn('pressure', res1['factors'])
             self.assertIn('temperature', res1['factors'])
             self.assertIn('gait', res1['factors'])
-            print("[OK] Test 01 Passed: Risk Engine calculation determinism verified.")
+            self.assertIn("ML Model Assessment", res1['takeaway'])
+            print(f"[OK] Test 01 Passed: ML Engine prediction level '{res1['level']}' ({res1['confidence']}% confidence) verified.")
 
     def test_02_alert_deduplication(self):
         """Verify alert deduplication (updates existing active alert instead of duplicating rows)."""
         with self.app.app_context():
             patient = Patient.query.first()
             zones = dict(patient.baseline_pressure)
-            zones['R_met1'] += 50.0
+            zones['R_met'] = zones.get('R_met', 30.0) + 50.0
             
             risk_res = RiskEngine.calculate(patient, zones, 31.8, 34.4, {'asymmetry': 18.0})
 
@@ -67,7 +71,7 @@ class SmartfootSystemTests(unittest.TestCase):
         # Valid POST request
         payload = {
             'device_token': token,
-            'pressure_zones': {'L_heel': 35.0, 'R_met1': 80.0},
+            'pressure_zones': {'L_heel': 35.0, 'R_met': 80.0},
             'temperature_left': 32.0,
             'temperature_right': 34.5,
             'gait_data': {'cadence': 105, 'asymmetry': 12.0}
@@ -76,12 +80,13 @@ class SmartfootSystemTests(unittest.TestCase):
         self.assertEqual(res.status_code, 201)
         data = json.loads(res.data)
         self.assertEqual(data['patient_id'], sita_patient_id)
+        self.assertIn(data['risk_level'], ['LOW', 'MODERATE', 'HIGH'])
 
         # Invalid token POST request
         bad_payload = dict(payload, device_token="INVALID_TOKEN_999")
         res_bad = self.client.post('/api/v1/telemetry', data=json.dumps(bad_payload), content_type='application/json')
         self.assertEqual(res_bad.status_code, 401)
-        print("[OK] Test 03 Passed: ESP32 device-token ingestion & isolation routing verified.")
+        print("[OK] Test 03 Passed: ESP32 device-token ingestion & ML risk prediction verified.")
 
     def test_04_multi_patient_data_isolation(self):
         """Verify multi-patient data isolation across seeded patients."""

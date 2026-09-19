@@ -1,0 +1,29 @@
+{
+  "trained_at_version": "1.0-ML",
+  "algorithm": "RandomForestClassifier",
+  "n_estimators": 100,
+  "accuracy": 0.939,
+  "labels": [
+    "LOW",
+    "MODERATE",
+    "HIGH"
+  ],
+  "feature_names": [
+    "max_p_dev",
+    "avg_p_dev",
+    "temp_diff",
+    "gait_asym",
+    "cadence",
+    "impact_g",
+    "patient_age"
+  ],
+  "feature_importances": {
+    "max_p_dev": 0.234,
+    "avg_p_dev": 0.1719,
+    "temp_diff": 0.2698,
+    "gait_asym": 0.1607,
+    "cadence": 0.0253,
+    "impact_g": 0.12,
+    "patient_age": 0.0184
+  }
+}
