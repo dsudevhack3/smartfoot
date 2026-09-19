@@ -24,7 +24,7 @@ class PatientSimulator(threading.Thread):
 
     def run(self):
         with self.app.app_context():
-            patient = Patient.query.get(self.patient_id)
+            patient = db.session.get(Patient, self.patient_id)
             if not patient:
                 return
             
@@ -39,7 +39,7 @@ class PatientSimulator(threading.Thread):
                 self.tick_count += 1
 
                 with self.app.app_context():
-                    patient = Patient.query.get(self.patient_id)
+                    patient = db.session.get(Patient, self.patient_id)
                     if not patient:
                         continue
 

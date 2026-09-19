@@ -134,7 +134,7 @@ def dashboard():
 @doctor_required
 def patient_detail(patient_id):
     doctor = current_user.doctor_profile
-    patient = Patient.query.get_or_404(patient_id)
+    patient = db.get_or_404(Patient, patient_id)
 
     # Scoped authorization check: Doctor can only access assigned patients
     if patient.assigned_doctor_id != doctor.id:
@@ -176,7 +176,7 @@ def patient_detail(patient_id):
 @doctor_required
 def acknowledge_alert(alert_id):
     doctor = current_user.doctor_profile
-    alert = Alert.query.get_or_404(alert_id)
+    alert = db.get_or_404(Alert, alert_id)
 
     # Scoped check: only allow acknowledging alerts for assigned patients
     if alert.patient.assigned_doctor_id != doctor.id:
@@ -210,7 +210,7 @@ def create_alert():
     if not patient_id or not title or not description:
         return jsonify({'success': False, 'message': 'Please provide a patient, alert title, and clinical description.'}), 400
 
-    patient = Patient.query.get(patient_id)
+    patient = db.session.get(Patient, patient_id)
     if not patient or patient.assigned_doctor_id != doctor.id:
         return jsonify({'success': False, 'message': 'Unauthorized or patient not assigned to you.'}), 403
 

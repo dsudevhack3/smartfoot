@@ -127,7 +127,7 @@ def demo_login(user_id):
         flash("Instant demo login is disabled in production mode.", "danger")
         return redirect(url_for('auth.login_page'))
 
-    user = User.query.get_or_404(user_id)
+    user = db.get_or_404(User, user_id)
     login_user(user, remember=True)
     flash(f"Quick-logged in as {user.name} ({user.role})", "success")
 
