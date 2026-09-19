@@ -4,17 +4,20 @@
 
 {% block content %}
 <div class="doctor-layout">
-  
+
   <!-- Left Sidebar Navigation -->
   <aside class="sidebar">
     <div class="sidebar-menu">
-      <a href="#clinical-dashboard-section" class="sidebar-link active" id="nav-clinical-dashboard" onclick="scrollToSection('clinical-dashboard-section', this); return false;">
+      <a href="#clinical-dashboard-section" class="sidebar-link active" id="nav-clinical-dashboard"
+        onclick="scrollToSection('clinical-dashboard-section', this); return false;">
         <i data-lucide="layout-dashboard"></i> Clinical Dashboard
       </a>
-      <a href="#patient-registry-section" class="sidebar-link" id="nav-patient-registry" onclick="scrollToSection('patient-registry-section', this); return false;">
+      <a href="#patient-registry-section" class="sidebar-link" id="nav-patient-registry"
+        onclick="scrollToSection('patient-registry-section', this); return false;">
         <i data-lucide="users"></i> Patient Registry
       </a>
-      <a href="#active-alerts-section" class="sidebar-link" id="nav-active-alerts" onclick="scrollToSection('active-alerts-section', this); return false;">
+      <a href="#active-alerts-section" class="sidebar-link" id="nav-active-alerts"
+        onclick="scrollToSection('active-alerts-section', this); return false;">
         <i data-lucide="alert-circle"></i> Active Alerts
       </a>
       <a href="javascript:void(0)" class="sidebar-link" id="nav-clinical-reports" onclick="openReportsModal()">
@@ -30,7 +33,8 @@
 
     <!-- Bottom Persistent Active Smart Insole Widget -->
     <div class="persistent-widget">
-      <div style="font-weight: 700; color: #fff; margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.3rem;">
+      <div
+        style="font-weight: 700; color: #fff; margin-bottom: 0.2rem; display: flex; align-items: center; gap: 0.3rem;">
         ⚡ SMART INSOLE ACTIVE
       </div>
       <p style="color: var(--text-muted); font-size: 0.7rem; line-height: 1.3;">
@@ -44,21 +48,23 @@
 
   <!-- Main Clinical Console Workspace -->
   <main class="main-content" style="max-width: 100%;">
-    
+
     <!-- Time-aware Greeting Header -->
     <div class="dashboard-banner" id="clinical-dashboard-section" style="scroll-margin-top: 80px;">
       <div>
-        <h1 class="banner-title" id="time-greeting">Good day, Dr. {{ doctor.user.name }}</h1>
+        <h1 class="banner-title" id="time-greeting">Good day,{{ doctor.user.name }}</h1>
         <p class="banner-subtitle">
           Diabetic foot tele-monitoring and multi-patient risk stratification console.
         </p>
       </div>
 
       <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
-        <span style="background: rgba(16, 185, 129, 0.15); color: var(--risk-low); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.4rem 0.85rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700;">
+        <span
+          style="background: rgba(16, 185, 129, 0.15); color: var(--risk-low); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.4rem 0.85rem; border-radius: 8px; font-size: 0.8rem; font-weight: 700;">
           {{ stats.total_patients }} Active Insole Feeds
         </span>
-        <button type="button" class="btn-primary" onclick="openCreateAlertModal()" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 1rem; font-size: 0.82rem; font-weight: 700; box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); background: linear-gradient(135deg, #ef4444, #dc2626); border-color: #f87171;">
+        <button type="button" class="btn-primary" onclick="openCreateAlertModal()"
+          style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 1rem; font-size: 0.82rem; font-weight: 700; box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); background: linear-gradient(135deg, #ef4444, #dc2626); border-color: #f87171;">
           <i data-lucide="bell-plus" style="width: 16px; height: 16px;"></i> Dispatch Clinical Alert
         </button>
       </div>
@@ -66,34 +72,45 @@
 
     <!-- 5 Summary Stat Cards -->
     <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
-      
-      <div class="stat-card" style="cursor: pointer;" onclick="scrollToSection('patient-registry-section', document.getElementById('nav-patient-registry'))" title="Jump to Patient Registry">
+
+      <div class="stat-card" style="cursor: pointer;"
+        onclick="scrollToSection('patient-registry-section', document.getElementById('nav-patient-registry'))"
+        title="Jump to Patient Registry">
         <div class="stat-header">Total Patients</div>
         <div class="stat-value">{{ stats.total_patients }}</div>
         <div class="stat-footer">Assigned tele-monitoring cohort</div>
       </div>
 
-      <div class="stat-card" style="border-left: 4px solid var(--risk-low); cursor: pointer;" onclick="scrollToSection('patient-registry-section', document.getElementById('nav-patient-registry')); filterRegistry('LOW');" title="Filter Low Risk">
+      <div class="stat-card" style="border-left: 4px solid var(--risk-low); cursor: pointer;"
+        onclick="scrollToSection('patient-registry-section', document.getElementById('nav-patient-registry')); filterRegistry('LOW');"
+        title="Filter Low Risk">
         <div class="stat-header">Low Risk</div>
         <div class="stat-value" style="color: var(--risk-low);">{{ stats.low_risk }}</div>
         <div class="stat-footer">Baseline stable</div>
       </div>
 
-      <div class="stat-card" style="border-left: 4px solid var(--risk-mod); cursor: pointer;" onclick="scrollToSection('patient-registry-section', document.getElementById('nav-patient-registry')); filterRegistry('MODERATE');" title="Filter Moderate Risk">
+      <div class="stat-card" style="border-left: 4px solid var(--risk-mod); cursor: pointer;"
+        onclick="scrollToSection('patient-registry-section', document.getElementById('nav-patient-registry')); filterRegistry('MODERATE');"
+        title="Filter Moderate Risk">
         <div class="stat-header">Moderate Risk</div>
         <div class="stat-value" style="color: var(--risk-mod);">{{ stats.mod_risk }}</div>
         <div class="stat-footer">Requires 3-day follow-up</div>
       </div>
 
-      <div class="stat-card" style="border-left: 4px solid var(--risk-high); cursor: pointer;" onclick="scrollToSection('patient-registry-section', document.getElementById('nav-patient-registry')); filterRegistry('HIGH');" title="Filter High Risk">
+      <div class="stat-card" style="border-left: 4px solid var(--risk-high); cursor: pointer;"
+        onclick="scrollToSection('patient-registry-section', document.getElementById('nav-patient-registry')); filterRegistry('HIGH');"
+        title="Filter High Risk">
         <div class="stat-header">High Risk</div>
         <div class="stat-value" style="color: var(--risk-high);">{{ stats.high_risk }}</div>
         <div class="stat-footer" style="color: #fca5a5;">Requires clinical attention</div>
       </div>
 
-      <div class="stat-card" style="cursor: pointer;" onclick="scrollToSection('active-alerts-section', document.getElementById('nav-active-alerts'))" title="Jump to Active Alerts">
+      <div class="stat-card" style="cursor: pointer;"
+        onclick="scrollToSection('active-alerts-section', document.getElementById('nav-active-alerts'))"
+        title="Jump to Active Alerts">
         <div class="stat-header">Active Alerts</div>
-        <div class="stat-value" id="stat-active-alerts-val" style="color: {% if stats.active_alerts > 0 %}var(--risk-high){% else %}var(--text-main){% endif %};">
+        <div class="stat-value" id="stat-active-alerts-val"
+          style="color: {% if stats.active_alerts > 0 %}var(--risk-high){% else %}var(--text-main){% endif %};">
           {{ stats.active_alerts }}
         </div>
         <div class="stat-footer">Unacknowledged notices</div>
@@ -111,7 +128,8 @@
           </h2>
           <div style="display: flex; align-items: center; gap: 0.5rem;">
             {% if featured_patient %}
-            <span style="font-size: 0.72rem; color: var(--primary-cyan); background: rgba(6,182,212,0.1); border: 1px solid var(--border-glow); padding: 0.2rem 0.65rem; border-radius: 999px; font-weight: 700;">
+            <span
+              style="font-size: 0.72rem; color: var(--primary-cyan); background: rgba(6,182,212,0.1); border: 1px solid var(--border-glow); padding: 0.2rem 0.65rem; border-radius: 999px; font-weight: 700;">
               Patient: {{ featured_patient.user.name }} ({{ featured_patient.patient_code }})
             </span>
             {% endif %}
@@ -132,58 +150,69 @@
               <svg viewBox="0 0 210 520" class="insole-svg" id="insole-svg-right">
                 <defs>
                   <radialGradient id="rgR_dash" cx="50%" cy="30%" r="65%">
-                    <stop offset="0%" stop-color="#0284c7" stop-opacity="0.9"/>
-                    <stop offset="60%" stop-color="#0369a1" stop-opacity="0.95"/>
-                    <stop offset="100%" stop-color="#073b5e" stop-opacity="1"/>
+                    <stop offset="0%" stop-color="#0284c7" stop-opacity="0.9" />
+                    <stop offset="60%" stop-color="#0369a1" stop-opacity="0.95" />
+                    <stop offset="100%" stop-color="#073b5e" stop-opacity="1" />
                   </radialGradient>
                   <filter id="glowR_dash" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="4" result="blur"/>
+                    <feGaussianBlur stdDeviation="4" result="blur" />
                     <feMerge>
-                      <feMergeNode in="blur"/>
-                      <feMergeNode in="SourceGraphic"/>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
                     </feMerge>
                   </filter>
                 </defs>
 
                 <!-- Outer Glowing Solid Contour Line -->
-                <path d="M 85 18 C 35 18 10 48 12 95 C 14 130 32 158 36 192 C 42 245 64 295 70 345 C 76 395 72 438 74 462 C 78 498 118 506 144 504 C 170 502 184 476 184 444 C 184 400 168 350 168 298 C 168 238 190 162 190 102 C 190 50 142 18 85 18 Z"
-                      fill="url(#rgR_dash)" stroke="#1a8ecb" stroke-width="2.5" filter="url(#glowR_dash)"/>
+                <path
+                  d="M 85 18 C 35 18 10 48 12 95 C 14 130 32 158 36 192 C 42 245 64 295 70 345 C 76 395 72 438 74 462 C 78 498 118 506 144 504 C 170 502 184 476 184 444 C 184 400 168 350 168 298 C 168 238 190 162 190 102 C 190 50 142 18 85 18 Z"
+                  fill="url(#rgR_dash)" stroke="#1a8ecb" stroke-width="2.5" filter="url(#glowR_dash)" />
 
                 <!-- Inner Dashed Outline Contour -->
-                <path d="M 87 25 C 42 25 20 52 22 95 C 24 127 40 154 44 188 C 50 240 71 288 77 338 C 83 388 79 430 81 454 C 85 486 120 496 142 494 C 164 492 176 468 176 438 C 176 396 161 346 161 296 C 161 240 182 168 182 105 C 182 56 139 25 87 25 Z"
-                      fill="none" stroke="#00e5ff" stroke-width="1.8" stroke-dasharray="6,4" opacity="0.85"/>
+                <path
+                  d="M 87 25 C 42 25 20 52 22 95 C 24 127 40 154 44 188 C 50 240 71 288 77 338 C 83 388 79 430 81 454 C 85 486 120 496 142 494 C 164 492 176 468 176 438 C 176 396 161 346 161 296 C 161 240 182 168 182 105 C 182 56 139 25 87 25 Z"
+                  fill="none" stroke="#00e5ff" stroke-width="1.8" stroke-dasharray="6,4" opacity="0.85" />
 
                 <!-- PCB Circuit Trace Lines -->
-                <line x1="70" y1="119" x2="70" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
-                <line x1="76" y1="119" x2="76" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
-                <line x1="82" y1="119" x2="82" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
-                <path d="M 156 162 L 156 260 L 142 290 L 142 415" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
-                <path d="M 125 101 L 125 248" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
-                <path d="M 115 302 L 115 415" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65"/>
+                <line x1="70" y1="119" x2="70" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65" />
+                <line x1="76" y1="119" x2="76" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65" />
+                <line x1="82" y1="119" x2="82" y2="415" stroke="#00e5ff" stroke-width="1.2" opacity="0.65" />
+                <path d="M 156 162 L 156 260 L 142 290 L 142 415" fill="none" stroke="#00e5ff" stroke-width="1.2"
+                  opacity="0.65" />
+                <path d="M 125 101 L 125 248" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65" />
+                <path d="M 115 302 L 115 415" fill="none" stroke="#00e5ff" stroke-width="1.2" opacity="0.65" />
 
                 <!-- R3 → R_toe | Square FSR -->
-                <rect id="sensor-node-R_toe" x="42" y="65" width="68" height="54" rx="8" ry="8" fill="#27a869" stroke="#ffffff" stroke-width="1.2"/>
+                <rect id="sensor-node-R_toe" x="42" y="65" width="68" height="54" rx="8" ry="8" fill="#27a869"
+                  stroke="#ffffff" stroke-width="1.2" />
                 <text x="76" y="87" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">R3</text>
-                <text id="sensor-val-R_toe" x="76" y="106" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">59k</text>
+                <text id="sensor-val-R_toe" x="76" y="106" font-size="11" font-weight="700" fill="#ffffff"
+                  text-anchor="middle">59k</text>
 
                 <!-- R4 → R_met | Circular FSR -->
-                <circle id="sensor-node-R_met" cx="156" cy="135" r="27" fill="#27a869" stroke="#ffffff" stroke-width="1.2"/>
+                <circle id="sensor-node-R_met" cx="156" cy="135" r="27" fill="#27a869" stroke="#ffffff"
+                  stroke-width="1.2" />
                 <text x="156" y="131" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">R4</text>
-                <text id="sensor-val-R_met" x="156" y="149" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">49k</text>
+                <text id="sensor-val-R_met" x="156" y="149" font-size="11" font-weight="700" fill="#ffffff"
+                  text-anchor="middle">49k</text>
 
                 <!-- T1 Thermistor Badge (Single Temperature Sensor) -->
-                <circle cx="125" cy="90" r="11" fill="#091b2e" stroke="#00e5ff" stroke-width="1.5"/>
+                <circle cx="125" cy="90" r="11" fill="#091b2e" stroke="#00e5ff" stroke-width="1.5" />
                 <text x="125" y="93.5" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle">T1</text>
 
                 <!-- R2 → R_arch | Circular FSR -->
-                <circle id="sensor-node-R_arch" cx="115" cy="275" r="27" fill="#279ca8" stroke="#ffffff" stroke-width="1.2"/>
+                <circle id="sensor-node-R_arch" cx="115" cy="275" r="27" fill="#279ca8" stroke="#ffffff"
+                  stroke-width="1.2" />
                 <text x="115" y="271" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">R2</text>
-                <text id="sensor-val-R_arch" x="115" y="289" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">29k</text>
+                <text id="sensor-val-R_arch" x="115" y="289" font-size="11" font-weight="700" fill="#ffffff"
+                  text-anchor="middle">29k</text>
 
                 <!-- R1 → R_heel | Square FSR -->
-                <rect id="sensor-node-R_heel" x="80" y="415" width="68" height="54" rx="8" ry="8" fill="#279ca8" stroke="#ffffff" stroke-width="1.2"/>
+                <rect id="sensor-node-R_heel" x="80" y="415" width="68" height="54" rx="8" ry="8" fill="#279ca8"
+                  stroke="#ffffff" stroke-width="1.2" />
                 <text x="114" y="437" font-size="13" font-weight="900" fill="#ffffff" text-anchor="middle">R1</text>
-                <text id="sensor-val-R_heel" x="114" y="456" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">43k</text>
+                <text id="sensor-val-R_heel" x="114" y="456" font-size="11" font-weight="700" fill="#ffffff"
+                  text-anchor="middle">43k</text>
               </svg>
             </div>
           </div>
@@ -201,11 +230,15 @@
         <!-- Sensor Type Legend -->
         <div class="insole-sensor-legend">
           <div class="legend-sensor-item">
-            <div class="legend-radio-box"><div class="legend-icon-sq"></div></div>
+            <div class="legend-radio-box">
+              <div class="legend-icon-sq"></div>
+            </div>
             <span>Square FSR (Forefoot / Heel)</span>
           </div>
           <div class="legend-sensor-item">
-            <div class="legend-radio-box"><div class="legend-icon-ci"></div></div>
+            <div class="legend-radio-box">
+              <div class="legend-icon-ci"></div>
+            </div>
             <span>Circular FSR (Lat. Forefoot / Arch)</span>
           </div>
           <div class="legend-sensor-item">
@@ -227,8 +260,8 @@
         <div class="gauge-row">
           <div class="gauge-circle-container">
             <svg class="gauge-svg" width="150" height="150" viewBox="0 0 160 160">
-              <circle class="gauge-bg" cx="80" cy="80" r="70" fill="none"/>
-              <circle class="gauge-progress" id="risk-gauge-progress" cx="80" cy="80" r="70" fill="none"/>
+              <circle class="gauge-bg" cx="80" cy="80" r="70" fill="none" />
+              <circle class="gauge-progress" id="risk-gauge-progress" cx="80" cy="80" r="70" fill="none" />
             </svg>
             <div class="gauge-center-text">
               <div class="gauge-score" id="risk-gauge-score">{{ risk_data.score|round|int }}</div>
@@ -249,7 +282,8 @@
               <span>Plantary Pressure Deviation (40% Weight)</span>
               <span style="color: var(--primary-cyan);">Active Telemetry</span>
             </div>
-            <div class="factor-explanation">Monitors peak force on high-risk right plantar zones (R3 Forefoot, R4 Lateral Forefoot, R1 Heel).</div>
+            <div class="factor-explanation">Monitors peak force on high-risk right plantar zones (R3 Forefoot, R4
+              Lateral Forefoot, R1 Heel).</div>
           </div>
 
           <div class="factor-card">
@@ -280,8 +314,9 @@
 
         <!-- Filter Pills & Search Box -->
         <div style="display: flex; items-center; gap: 0.75rem; flex-wrap: wrap;">
-          <input type="text" id="registry-search" class="form-input" placeholder="Search patient by name or ID..." style="width: 220px; padding: 0.4rem 0.75rem; font-size: 0.8rem;" oninput="filterRegistry()">
-          
+          <input type="text" id="registry-search" class="form-input" placeholder="Search patient by name or ID..."
+            style="width: 220px; padding: 0.4rem 0.75rem; font-size: 0.8rem;" oninput="filterRegistry()">
+
           <div style="display: flex; gap: 0.3rem;">
             <button class="btn-filter active" data-filter="ALL" onclick="filterRegistry('ALL')">ALL</button>
             <button class="btn-filter" data-filter="HIGH" onclick="filterRegistry('HIGH')">HIGH RISK</button>
@@ -307,13 +342,16 @@
           </thead>
           <tbody>
             {% for row in patient_rows %}
-            <tr class="registry-row" data-risk="{{ row.risk_level }}" data-name="{{ row.user.name|lower }}" data-code="{{ row.patient.patient_code|lower }}">
+            <tr class="registry-row" data-risk="{{ row.risk_level }}" data-name="{{ row.user.name|lower }}"
+              data-code="{{ row.patient.patient_code|lower }}">
               <td>
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <img src="{{ row.user.profile_photo_url }}" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;" alt="{{ row.user.name }}">
+                  <img src="{{ row.user.profile_photo_url }}"
+                    style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover;" alt="{{ row.user.name }}">
                   <div>
                     <div style="font-weight: 700; color: #fff;">{{ row.user.name }}</div>
-                    <div style="font-size: 0.72rem; color: var(--text-muted);">{{ row.patient.patient_code }} • {{ row.patient.age }}y {{ row.patient.gender }}</div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted);">{{ row.patient.patient_code }} • {{
+                      row.patient.age }}y {{ row.patient.gender }}</div>
                   </div>
                 </div>
               </td>
@@ -329,7 +367,8 @@
               </td>
 
               <td>
-                <span style="font-weight: 700; color: {% if row.temp_diff >= 2.0 %}var(--risk-high){% elif row.temp_diff >= 1.0 %}var(--risk-mod){% else %}var(--text-main){% endif %};">
+                <span
+                  style="font-weight: 700; color: {% if row.temp_diff >= 2.0 %}var(--risk-high){% elif row.temp_diff >= 1.0 %}var(--risk-mod){% else %}var(--text-main){% endif %};">
                   Δ {{ row.temp_diff }}°C
                 </span>
               </td>
@@ -340,7 +379,9 @@
 
               <td>
                 {% if row.active_alerts_count > 0 %}
-                <span style="background: rgba(239, 68, 68, 0.2); color: var(--risk-high); border: 1px solid rgba(239, 68, 68, 0.4); padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; cursor: pointer;" onclick="scrollToSection('active-alerts-section', document.getElementById('nav-active-alerts'))">
+                <span
+                  style="background: rgba(239, 68, 68, 0.2); color: var(--risk-high); border: 1px solid rgba(239, 68, 68, 0.4); padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; cursor: pointer;"
+                  onclick="scrollToSection('active-alerts-section', document.getElementById('nav-active-alerts'))">
                   {{ row.active_alerts_count }} Active
                 </span>
                 {% else %}
@@ -350,13 +391,15 @@
 
               <td>
                 <span style="font-size: 0.75rem; color: var(--risk-low); font-weight: 600;">
-                  <span class="pulse-dot" style="display: inline-block; vertical-align: middle; margin-right: 4px;"></span>
+                  <span class="pulse-dot"
+                    style="display: inline-block; vertical-align: middle; margin-right: 4px;"></span>
                   {{ row.last_updated }}
                 </span>
               </td>
 
               <td>
-                <a href="{{ url_for('doctor.patient_detail', patient_id=row.patient.id) }}" class="btn-primary" style="padding: 0.3rem 0.75rem; font-size: 0.75rem; width: auto; display: inline-flex; align-items: center; gap: 0.3rem;">
+                <a href="{{ url_for('doctor.patient_detail', patient_id=row.patient.id) }}" class="btn-primary"
+                  style="padding: 0.3rem 0.75rem; font-size: 0.75rem; width: auto; display: inline-flex; align-items: center; gap: 0.3rem;">
                   Inspect <i data-lucide="chevron-right" style="width: 14px; height: 14px;"></i>
                 </a>
               </td>
@@ -372,7 +415,8 @@
       <div class="card-title-group" style="flex-wrap: wrap; gap: 0.75rem;">
         <h2 class="card-title" style="display: flex; align-items: center; gap: 0.5rem;">
           <i data-lucide="alert-circle" style="color: var(--risk-high);"></i> Active Clinical Alerts & Directives
-          <span class="badge-alert-count" id="active-alerts-badge" style="background: rgba(239, 68, 68, 0.2); color: var(--risk-high); border: 1px solid rgba(239, 68, 68, 0.4); padding: 0.2rem 0.65rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700;">
+          <span class="badge-alert-count" id="active-alerts-badge"
+            style="background: rgba(239, 68, 68, 0.2); color: var(--risk-high); border: 1px solid rgba(239, 68, 68, 0.4); padding: 0.2rem 0.65rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700;">
             {{ stats.active_alerts }} Unacknowledged
           </span>
         </h2>
@@ -385,7 +429,8 @@
             <button class="btn-filter" data-alert-filter="HIGH" onclick="filterAlerts('HIGH')">HIGH</button>
             <button class="btn-filter" data-alert-filter="MEDIUM" onclick="filterAlerts('MEDIUM')">MODERATE</button>
           </div>
-          <button type="button" class="btn-primary" onclick="openCreateAlertModal()" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.85rem; font-size: 0.78rem; font-weight: 700; background: linear-gradient(135deg, #ef4444, #dc2626); border-color: #f87171;">
+          <button type="button" class="btn-primary" onclick="openCreateAlertModal()"
+            style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.85rem; font-size: 0.78rem; font-weight: 700; background: linear-gradient(135deg, #ef4444, #dc2626); border-color: #f87171;">
             <i data-lucide="bell-plus" style="width: 14px; height: 14px;"></i> Dispatch New Alert
           </button>
         </div>
@@ -410,9 +455,12 @@
               <td>
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                   {% if a.patient.user.profile_photo_url %}
-                  <img src="{{ a.patient.user.profile_photo_url }}" style="width: 34px; height: 34px; border-radius: 50%; object-fit: cover;" alt="{{ a.patient.user.name }}">
+                  <img src="{{ a.patient.user.profile_photo_url }}"
+                    style="width: 34px; height: 34px; border-radius: 50%; object-fit: cover;"
+                    alt="{{ a.patient.user.name }}">
                   {% else %}
-                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #1e293b; color: #38bdf8; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">
+                  <div
+                    style="width: 34px; height: 34px; border-radius: 50%; background: #1e293b; color: #38bdf8; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">
                     {{ a.patient.user.name[0] }}
                   </div>
                   {% endif %}
@@ -431,11 +479,13 @@
 
               <td>
                 <div style="font-weight: 700; color: #fff; font-size: 0.85rem;">{{ a.title }}</div>
-                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem; max-width: 440px;">{{ a.description }}</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem; max-width: 440px;">{{
+                  a.description }}</div>
               </td>
 
               <td>
-                <span style="font-size: 0.75rem; background: rgba(6, 182, 212, 0.1); border: 1px solid var(--border-glow); padding: 0.2rem 0.5rem; border-radius: 4px; color: var(--primary-cyan);">
+                <span
+                  style="font-size: 0.75rem; background: rgba(6, 182, 212, 0.1); border: 1px solid var(--border-glow); padding: 0.2rem 0.5rem; border-radius: 4px; color: var(--primary-cyan);">
                   {{ a.region or 'Right Insole' }}
                 </span>
               </td>
@@ -448,10 +498,12 @@
 
               <td>
                 <div style="display: flex; align-items: center; gap: 0.4rem;">
-                  <button type="button" class="btn-primary" onclick="acknowledgeAlertItem(this, {{ a.id }})" style="padding: 0.3rem 0.7rem; font-size: 0.72rem; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; white-space: nowrap;">
+                  <button type="button" class="btn-primary" onclick="acknowledgeAlertItem(this, {{ a.id }})"
+                    style="padding: 0.3rem 0.7rem; font-size: 0.72rem; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; white-space: nowrap;">
                     ✓ Acknowledge
                   </button>
-                  <a href="{{ url_for('doctor.patient_detail', patient_id=a.patient_id) }}" class="btn-primary" style="padding: 0.3rem 0.65rem; font-size: 0.72rem; background: rgba(255, 255, 255, 0.05); border-color: rgba(255,255,255,0.1); color: var(--text-muted); white-space: nowrap;">
+                  <a href="{{ url_for('doctor.patient_detail', patient_id=a.patient_id) }}" class="btn-primary"
+                    style="padding: 0.3rem 0.65rem; font-size: 0.72rem; background: rgba(255, 255, 255, 0.05); border-color: rgba(255,255,255,0.1); color: var(--text-muted); white-space: nowrap;">
                     Inspect
                   </a>
                 </div>
@@ -463,9 +515,11 @@
       </div>
       {% else %}
       <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted);">
-        <i data-lucide="check-circle-2" style="width: 42px; height: 42px; color: var(--risk-low); margin-bottom: 0.5rem; display: inline-block;"></i>
+        <i data-lucide="check-circle-2"
+          style="width: 42px; height: 42px; color: var(--risk-low); margin-bottom: 0.5rem; display: inline-block;"></i>
         <div style="font-weight: 700; color: #fff; font-size: 1rem;">No Active Alerts</div>
-        <p style="font-size: 0.8rem; margin-top: 0.25rem;">All assigned patients are currently within acceptable pressure and thermal risk thresholds.</p>
+        <p style="font-size: 0.8rem; margin-top: 0.25rem;">All assigned patients are currently within acceptable
+          pressure and thermal risk thresholds.</p>
       </div>
       {% endif %}
     </div>
@@ -477,20 +531,25 @@
         <h2 class="card-title">
           <i data-lucide="sliders" style="color: var(--primary-cyan);"></i> Live Demo Simulator Controls
         </h2>
-        <span style="font-size: 0.75rem; color: var(--primary-cyan);">Simulate scenario changes per patient independently</span>
+        <span style="font-size: 0.75rem; color: var(--primary-cyan);">Simulate scenario changes per patient
+          independently</span>
       </div>
 
       <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
         {% for row in patient_rows %}
-        <div style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 0.85rem; border-radius: 8px; flex: 1; min-width: 240px;">
+        <div
+          style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 0.85rem; border-radius: 8px; flex: 1; min-width: 240px;">
           <div style="font-weight: 700; color: #fff; margin-bottom: 0.5rem; font-size: 0.85rem;">
             {{ row.user.name }} ({{ row.patient.patient_code }})
           </div>
-          
+
           <div style="display: flex; gap: 0.4rem;">
-            <button type="button" class="btn-range" onclick="triggerSimScenario({{ row.patient.id }}, 'NORMAL')">Set Normal</button>
-            <button type="button" class="btn-range" onclick="triggerSimScenario({{ row.patient.id }}, 'MODERATE')">Set Moderate</button>
-            <button type="button" class="btn-range" onclick="triggerSimScenario({{ row.patient.id }}, 'HIGH_RISK')">Set High Spike</button>
+            <button type="button" class="btn-range" onclick="triggerSimScenario({{ row.patient.id }}, 'NORMAL')">Set
+              Normal</button>
+            <button type="button" class="btn-range" onclick="triggerSimScenario({{ row.patient.id }}, 'MODERATE')">Set
+              Moderate</button>
+            <button type="button" class="btn-range" onclick="triggerSimScenario({{ row.patient.id }}, 'HIGH_RISK')">Set
+              High Spike</button>
           </div>
         </div>
         {% endfor %}
@@ -513,9 +572,11 @@
 
     <form id="create-alert-form" onsubmit="submitNewAlert(event)">
       <div class="modal-body" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
-        
+
         <div>
-          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Target Patient</label>
+          <label
+            style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Target
+            Patient</label>
           <select id="modal-patient-id" class="form-input" style="width: 100%;" required>
             {% for row in patient_rows %}
             <option value="{{ row.patient.id }}">{{ row.user.name }} ({{ row.patient.patient_code }})</option>
@@ -525,7 +586,9 @@
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
           <div>
-            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Severity Level</label>
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Severity
+              Level</label>
             <select id="modal-alert-severity" class="form-input" style="width: 100%;">
               <option value="CRITICAL" style="color: #ef4444; font-weight: 700;">CRITICAL</option>
               <option value="HIGH" selected style="color: #f97316; font-weight: 700;">HIGH</option>
@@ -535,7 +598,9 @@
           </div>
 
           <div>
-            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Anatomical Region</label>
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Anatomical
+              Region</label>
             <select id="modal-alert-region" class="form-input" style="width: 100%;">
               <option value="Right Insole">Right Insole (General)</option>
               <option value="Right Forefoot (R3/R4)">Right Forefoot (R3/R4)</option>
@@ -546,20 +611,29 @@
         </div>
 
         <div>
-          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Alert Title</label>
-          <input type="text" id="modal-alert-title" class="form-input" placeholder="e.g. Offloading Recommended — Peak Pressure Spike" style="width: 100%;" required>
+          <label
+            style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Alert
+            Title</label>
+          <input type="text" id="modal-alert-title" class="form-input"
+            placeholder="e.g. Offloading Recommended — Peak Pressure Spike" style="width: 100%;" required>
         </div>
 
         <div>
-          <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Clinical Instructions / Description</label>
-          <textarea id="modal-alert-desc" class="form-input" rows="3" placeholder="Provide actionable advice for the patient (e.g., inspect right heel for tissue redness, restrict weight bearing for 24 hours)..." style="width: 100%; resize: vertical;" required></textarea>
+          <label
+            style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Clinical
+            Instructions / Description</label>
+          <textarea id="modal-alert-desc" class="form-input" rows="3"
+            placeholder="Provide actionable advice for the patient (e.g., inspect right heel for tissue redness, restrict weight bearing for 24 hours)..."
+            style="width: 100%; resize: vertical;" required></textarea>
         </div>
 
       </div>
 
       <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.25rem;">
-        <button type="button" class="btn-filter" onclick="closeCreateAlertModal()" style="padding: 0.5rem 1rem;">Cancel</button>
-        <button type="submit" class="btn-primary" id="btn-submit-alert" style="background: linear-gradient(135deg, #ef4444, #dc2626); border-color: #f87171; padding: 0.5rem 1.25rem;">
+        <button type="button" class="btn-filter" onclick="closeCreateAlertModal()"
+          style="padding: 0.5rem 1rem;">Cancel</button>
+        <button type="submit" class="btn-primary" id="btn-submit-alert"
+          style="background: linear-gradient(135deg, #ef4444, #dc2626); border-color: #f87171; padding: 0.5rem 1.25rem;">
           Dispatch Alert Now
         </button>
       </div>
@@ -578,8 +652,9 @@
     </div>
     <div class="modal-body" style="margin-top: 1rem; color: #cbd5e1; font-size: 0.85rem; line-height: 1.5;">
       <p>Automated diabetic peripheral neuropathy & plantar telemetry summary for Dr. {{ doctor.user.name }}.</p>
-      
-      <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+
+      <div
+        style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin: 1rem 0;">
         <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
           <span>Active Patient Cohort:</span>
           <strong style="color: #fff;">{{ stats.total_patients }} patients</strong>
@@ -599,11 +674,17 @@
       </div>
 
       <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem;">
-        <button type="button" class="btn-primary" onclick="alert('Exporting clinical PDF summary for patient cohort...'); closeReportsModal();" style="flex: 1; padding: 0.6rem;">
-          <i data-lucide="download" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i> Export PDF Report
+        <button type="button" class="btn-primary"
+          onclick="alert('Exporting clinical PDF summary for patient cohort...'); closeReportsModal();"
+          style="flex: 1; padding: 0.6rem;">
+          <i data-lucide="download" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i>
+          Export PDF Report
         </button>
-        <button type="button" class="btn-filter" onclick="alert('Exporting raw sensor telemetry CSV...'); closeReportsModal();" style="flex: 1; padding: 0.6rem;">
-          <i data-lucide="file-text" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i> Export CSV Data
+        <button type="button" class="btn-filter"
+          onclick="alert('Exporting raw sensor telemetry CSV...'); closeReportsModal();"
+          style="flex: 1; padding: 0.6rem;">
+          <i data-lucide="file-text" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i>
+          Export CSV Data
         </button>
       </div>
     </div>
@@ -620,15 +701,22 @@
       <button type="button" class="btn-close-modal" onclick="closeDoctorProfileModal()">&times;</button>
     </div>
     <div class="modal-body" style="margin-top: 1rem; text-align: center;">
-      <img src="{{ doctor.user.profile_photo_url }}" style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-cyan); margin-bottom: 0.75rem;" alt="{{ doctor.user.name }}">
+      <img src="{{ doctor.user.profile_photo_url }}"
+        style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-cyan); margin-bottom: 0.75rem;"
+        alt="{{ doctor.user.name }}">
       <h4 style="font-size: 1.1rem; font-weight: 800; color: #fff;">Dr. {{ doctor.user.name }}</h4>
       <p style="color: var(--primary-cyan); font-size: 0.85rem; font-weight: 600;">{{ doctor.credentials }}</p>
-      <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.85rem; margin: 1rem 0; text-align: left; font-size: 0.8rem;">
-        <div style="margin-bottom: 0.4rem;"><span style="color: var(--text-muted);">Email:</span> <strong style="color: #fff;">{{ doctor.user.email }}</strong></div>
-        <div style="margin-bottom: 0.4rem;"><span style="color: var(--text-muted);">Assigned Patients:</span> <strong style="color: #fff;">{{ stats.total_patients }}</strong></div>
-        <div><span style="color: var(--text-muted);">System Role:</span> <strong style="color: #10b981;">DOCTOR (Certified Tele-monitoring)</strong></div>
+      <div
+        style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.85rem; margin: 1rem 0; text-align: left; font-size: 0.8rem;">
+        <div style="margin-bottom: 0.4rem;"><span style="color: var(--text-muted);">Email:</span> <strong
+            style="color: #fff;">{{ doctor.user.email }}</strong></div>
+        <div style="margin-bottom: 0.4rem;"><span style="color: var(--text-muted);">Assigned Patients:</span> <strong
+            style="color: #fff;">{{ stats.total_patients }}</strong></div>
+        <div><span style="color: var(--text-muted);">System Role:</span> <strong style="color: #10b981;">DOCTOR
+            (Certified Tele-monitoring)</strong></div>
       </div>
-      <button type="button" class="btn-primary" onclick="closeDoctorProfileModal()" style="padding: 0.5rem 1.5rem; width: auto;">Close</button>
+      <button type="button" class="btn-primary" onclick="closeDoctorProfileModal()"
+        style="padding: 0.5rem 1.5rem; width: auto;">Close</button>
     </div>
   </div>
 </div>
@@ -644,18 +732,23 @@
     </div>
     <div class="modal-body" style="margin-top: 1rem; color: #cbd5e1; font-size: 0.85rem;">
       <div style="margin-bottom: 1rem;">
-        <label style="font-weight: 700; color: #fff; display: block; margin-bottom: 0.35rem;">Thermal Ulcer Threshold (Δ Temp)</label>
+        <label style="font-weight: 700; color: #fff; display: block; margin-bottom: 0.35rem;">Thermal Ulcer Threshold (Δ
+          Temp)</label>
         <input type="text" class="form-input" value="1.5 °C" readonly style="background: rgba(15, 23, 42, 0.5);">
       </div>
       <div style="margin-bottom: 1rem;">
-        <label style="font-weight: 700; color: #fff; display: block; margin-bottom: 0.35rem;">Forefoot Peak Pressure Cutoff</label>
+        <label style="font-weight: 700; color: #fff; display: block; margin-bottom: 0.35rem;">Forefoot Peak Pressure
+          Cutoff</label>
         <input type="text" class="form-input" value="70.0 kPa" readonly style="background: rgba(15, 23, 42, 0.5);">
       </div>
       <div style="margin-bottom: 1rem;">
-        <label style="font-weight: 700; color: #fff; display: block; margin-bottom: 0.35rem;">Telemetry Insole Calibration</label>
-        <input type="text" class="form-input" value="Right Foot Active (4 FSR + 1 Thermistor T1)" readonly style="background: rgba(15, 23, 42, 0.5);">
+        <label style="font-weight: 700; color: #fff; display: block; margin-bottom: 0.35rem;">Telemetry Insole
+          Calibration</label>
+        <input type="text" class="form-input" value="Right Foot Active (4 FSR + 1 Thermistor T1)" readonly
+          style="background: rgba(15, 23, 42, 0.5);">
       </div>
-      <button type="button" class="btn-primary" onclick="alert('Threshold settings saved.'); closeSettingsModal();" style="width: 100%; padding: 0.6rem;">Save Configuration</button>
+      <button type="button" class="btn-primary" onclick="alert('Threshold settings saved.'); closeSettingsModal();"
+        style="width: 100%; padding: 0.6rem;">Save Configuration</button>
     </div>
   </div>
 </div>
@@ -674,6 +767,7 @@
     cursor: pointer;
     transition: all 0.2s;
   }
+
   .btn-filter.active {
     background: rgba(6, 182, 212, 0.2);
     color: var(--primary-cyan);
@@ -683,7 +777,10 @@
   /* Modal Dialog Styles */
   .modal-overlay {
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: rgba(5, 8, 15, 0.85);
     backdrop-filter: blur(12px);
     z-index: 999;
@@ -705,8 +802,15 @@
   }
 
   @keyframes modalFadeIn {
-    from { opacity: 0; transform: translateY(-15px) scale(0.96); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+      opacity: 0;
+      transform: translateY(-15px) scale(0.96);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 
   .btn-close-modal {
@@ -717,7 +821,10 @@
     cursor: pointer;
     line-height: 1;
   }
-  .btn-close-modal:hover { color: #fff; }
+
+  .btn-close-modal:hover {
+    color: #fff;
+  }
 </style>
 
 <script>
@@ -743,39 +850,39 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        const row = document.getElementById(`alert-row-${alertId}`);
-        if (row) {
-          row.style.transition = 'all 0.4s';
-          row.style.opacity = '0.4';
-          row.style.background = 'rgba(16, 185, 129, 0.05)';
-        }
-        btn.outerHTML = '<span style="color: var(--risk-low); font-weight: 700; font-size: 0.75rem;">✓ Acknowledged</span>';
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          const row = document.getElementById(`alert-row-${alertId}`);
+          if (row) {
+            row.style.transition = 'all 0.4s';
+            row.style.opacity = '0.4';
+            row.style.background = 'rgba(16, 185, 129, 0.05)';
+          }
+          btn.outerHTML = '<span style="color: var(--risk-low); font-weight: 700; font-size: 0.75rem;">✓ Acknowledged</span>';
 
-        // Decrement alert counters
-        const badge = document.getElementById('active-alerts-badge');
-        const statCard = document.getElementById('stat-active-alerts-val');
-        if (badge) {
-          let count = parseInt(badge.textContent) || 0;
-          if (count > 0) badge.textContent = `${count - 1} Unacknowledged`;
+          // Decrement alert counters
+          const badge = document.getElementById('active-alerts-badge');
+          const statCard = document.getElementById('stat-active-alerts-val');
+          if (badge) {
+            let count = parseInt(badge.textContent) || 0;
+            if (count > 0) badge.textContent = `${count - 1} Unacknowledged`;
+          }
+          if (statCard) {
+            let count = parseInt(statCard.textContent) || 0;
+            if (count > 0) statCard.textContent = count - 1;
+          }
+        } else {
+          alert(data.message || 'Error acknowledging alert.');
+          btn.disabled = false;
+          btn.textContent = '✓ Acknowledge';
         }
-        if (statCard) {
-          let count = parseInt(statCard.textContent) || 0;
-          if (count > 0) statCard.textContent = count - 1;
-        }
-      } else {
-        alert(data.message || 'Error acknowledging alert.');
+      })
+      .catch(err => {
         btn.disabled = false;
         btn.textContent = '✓ Acknowledge';
-      }
-    })
-    .catch(err => {
-      btn.disabled = false;
-      btn.textContent = '✓ Acknowledge';
-      alert('Failed to contact server.');
-    });
+        alert('Failed to contact server.');
+      });
   }
 
   // Filter Alerts by Severity
@@ -824,62 +931,62 @@
   document.addEventListener('DOMContentLoaded', () => {
     {% if featured_patient %}
     window.initSmartfootSocket({{ featured_patient.id }});
-    const initialZones = {{ pressure_zones|tojson }};
-    if (window.FootPressureMap && initialZones) {
-      window.FootPressureMap.update(initialZones);
-    }
-    {% endif %}
+  const initialZones = {{ pressure_zones| tojson }};
+  if (window.FootPressureMap && initialZones) {
+    window.FootPressureMap.update(initialZones);
+  }
+  {% endif %}
 
-    // Time-aware greeting calculation
-    const hour = new Date().getHours();
-    const greetingEl = document.getElementById('time-greeting');
-    let timeStr = 'Good day';
-    if (hour < 12) timeStr = 'Good morning';
-    else if (hour < 17) timeStr = 'Good afternoon';
-    else timeStr = 'Good evening';
-    
-    if (greetingEl) {
-      greetingEl.textContent = `${timeStr}, Dr. {{ doctor.user.name }}`;
-    }
+  // Time-aware greeting calculation
+  const hour = new Date().getHours();
+  const greetingEl = document.getElementById('time-greeting');
+  let timeStr = 'Good day';
+  if (hour < 12) timeStr = 'Good morning';
+  else if (hour < 17) timeStr = 'Good afternoon';
+  else timeStr = 'Good evening';
 
-    // Search filter input listener
-    const searchInput = document.getElementById('registry-search');
-    if (searchInput) {
-      searchInput.addEventListener('input', () => filterRegistry());
-    }
+  if (greetingEl) {
+    greetingEl.textContent = `${timeStr}, Dr. {{ doctor.user.name }}`;
+  }
 
-    // Check URL Hash on initial page load (e.g. #patient-registry-section or #active-alerts-section)
-    const hash = window.location.hash.replace('#', '');
-    if (hash) {
-      const target = document.getElementById(hash);
-      const link = document.querySelector(`.sidebar-link[href="#${hash}"]`);
-      if (target) {
-        setTimeout(() => {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          if (link) {
-            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
-          }
-        }, 150);
-      }
-    }
+  // Search filter input listener
+  const searchInput = document.getElementById('registry-search');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => filterRegistry());
+  }
 
-    // Scroll-spy to keep sidebar navigation highlighted
-    window.addEventListener('scroll', () => {
-      const sections = ['clinical-dashboard-section', 'patient-registry-section', 'active-alerts-section'];
-      const scrollPos = window.scrollY + 120;
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sections[i]);
-        if (el && el.offsetTop <= scrollPos) {
-          const link = document.querySelector(`.sidebar-link[href="#${sections[i]}"]`);
-          if (link && !link.classList.contains('active')) {
-            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
-          }
-          break;
+  // Check URL Hash on initial page load (e.g. #patient-registry-section or #active-alerts-section)
+  const hash = window.location.hash.replace('#', '');
+  if (hash) {
+    const target = document.getElementById(hash);
+    const link = document.querySelector(`.sidebar-link[href="#${hash}"]`);
+    if (target) {
+      setTimeout(() => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (link) {
+          document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
         }
+      }, 150);
+    }
+  }
+
+  // Scroll-spy to keep sidebar navigation highlighted
+  window.addEventListener('scroll', () => {
+    const sections = ['clinical-dashboard-section', 'patient-registry-section', 'active-alerts-section'];
+    const scrollPos = window.scrollY + 120;
+    for (let i = sections.length - 1; i >= 0; i--) {
+      const el = document.getElementById(sections[i]);
+      if (el && el.offsetTop <= scrollPos) {
+        const link = document.querySelector(`.sidebar-link[href="#${sections[i]}"]`);
+        if (link && !link.classList.contains('active')) {
+          document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+        }
+        break;
       }
-    });
+    }
+  });
   });
 
   let currentFilter = 'ALL';
@@ -938,23 +1045,23 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     })
-    .then(res => res.json())
-    .then(data => {
-      btn.disabled = false;
-      btn.textContent = 'Dispatch Alert Now';
-      if (data.success) {
-        alert(data.message);
-        closeCreateAlertModal();
-        window.location.reload();
-      } else {
-        alert(data.message || 'Error dispatching alert.');
-      }
-    })
-    .catch(err => {
-      btn.disabled = false;
-      btn.textContent = 'Dispatch Alert Now';
-      alert('Failed to send alert.');
-    });
+      .then(res => res.json())
+      .then(data => {
+        btn.disabled = false;
+        btn.textContent = 'Dispatch Alert Now';
+        if (data.success) {
+          alert(data.message);
+          closeCreateAlertModal();
+          window.location.reload();
+        } else {
+          alert(data.message || 'Error dispatching alert.');
+        }
+      })
+      .catch(err => {
+        btn.disabled = false;
+        btn.textContent = 'Dispatch Alert Now';
+        alert('Failed to send alert.');
+      });
   }
 
   function triggerSimScenario(patientId, scenario) {
@@ -963,16 +1070,16 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ scenario: scenario })
     })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success) {
-        alert(data.message);
-        window.location.reload();
-      } else {
-        alert(data.message);
-      }
-    })
-    .catch(err => alert('Failed to set scenario.'));
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert(data.message);
+          window.location.reload();
+        } else {
+          alert(data.message);
+        }
+      })
+      .catch(err => alert('Failed to set scenario.'));
   }
 </script>
 {% endblock %}
