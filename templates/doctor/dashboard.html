@@ -52,7 +52,7 @@
     <!-- Time-aware Greeting Header -->
     <div class="dashboard-banner" id="clinical-dashboard-section" style="scroll-margin-top: 80px;">
       <div>
-        <h1 class="banner-title" id="time-greeting">Good day,{{ doctor.user.name }}</h1>
+        <h1 class="banner-title" id="time-greeting">Good day, {{ doctor.user.name if doctor.user.name.startswith('Dr.') else 'Dr. ' ~ doctor.user.name }}</h1>
         <p class="banner-subtitle">
           Diabetic foot tele-monitoring and multi-patient risk stratification console.
         </p>
@@ -651,7 +651,7 @@
       <button type="button" class="btn-close-modal" onclick="closeReportsModal()">&times;</button>
     </div>
     <div class="modal-body" style="margin-top: 1rem; color: #cbd5e1; font-size: 0.85rem; line-height: 1.5;">
-      <p>Automated diabetic peripheral neuropathy & plantar telemetry summary for Dr. {{ doctor.user.name }}.</p>
+      <p>Automated diabetic peripheral neuropathy & plantar telemetry summary for {{ doctor.user.name if doctor.user.name.startswith('Dr.') else 'Dr. ' ~ doctor.user.name }}.</p>
 
       <div
         style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin: 1rem 0;">
@@ -704,7 +704,7 @@
       <img src="{{ doctor.user.profile_photo_url }}"
         style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-cyan); margin-bottom: 0.75rem;"
         alt="{{ doctor.user.name }}">
-      <h4 style="font-size: 1.1rem; font-weight: 800; color: #fff;">Dr. {{ doctor.user.name }}</h4>
+      <h4 style="font-size: 1.1rem; font-weight: 800; color: #fff;">{{ doctor.user.name if doctor.user.name.startswith('Dr.') else 'Dr. ' ~ doctor.user.name }}</h4>
       <p style="color: var(--primary-cyan); font-size: 0.85rem; font-weight: 600;">{{ doctor.credentials }}</p>
       <div
         style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.85rem; margin: 1rem 0; text-align: left; font-size: 0.8rem;">
@@ -946,7 +946,9 @@
   else timeStr = 'Good evening';
 
   if (greetingEl) {
-    greetingEl.textContent = `${timeStr}, Dr. {{ doctor.user.name }}`;
+    let rawName = "{{ doctor.user.name }}";
+    let formattedName = rawName.startsWith('Dr.') ? rawName : `Dr. ${rawName}`;
+    greetingEl.textContent = `${timeStr}, ${formattedName}`;
   }
 
   // Search filter input listener

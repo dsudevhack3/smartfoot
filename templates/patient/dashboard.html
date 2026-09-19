@@ -11,7 +11,7 @@
       <h1 class="banner-title">Welcome, {{ patient.user.name }}</h1>
       <p class="banner-subtitle">
         Patient ID: <strong>{{ patient.patient_code }}</strong> • Age {{ patient.age }} {{ patient.gender }} • Assigned to 
-        <strong>Dr. {{ patient.assigned_doctor.user.name if patient.assigned_doctor else 'Unassigned' }}</strong>
+        <strong>{% if patient.assigned_doctor %}{{ patient.assigned_doctor.user.name if patient.assigned_doctor.user.name.startswith('Dr.') else 'Dr. ' ~ patient.assigned_doctor.user.name }}{% else %}Unassigned{% endif %}</strong>
       </p>
     </div>
     

@@ -198,7 +198,7 @@ def acknowledge_alert(alert_id):
         'success': True,
         'alert_id': alert.id,
         'status': 'ACKNOWLEDGED',
-        'message': f'Alert "{alert.title}" acknowledged by Dr. {doctor.user.name}.'
+        'message': f'Alert "{alert.title}" acknowledged by {doctor.user.name if doctor.user.name.startswith("Dr.") else "Dr. " + doctor.user.name}.'
     })
 
 @doctor_bp.route('/doctor/api/create-alert', methods=['POST'])
